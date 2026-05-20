@@ -1,0 +1,317 @@
+---
+description: 头脑风暴可视化增强规则——在设计呈现阶段按场景强制可验收的可视化产物；前端/UI 须完成方向预览（Visual Companion 或简易 HTML），再高保真 Demo 可选。
+alwaysApply: true
+---
+
+# 头脑风暴可视化增强
+
+本规则补充 Superpowers brainstorming 流程，在 **"Present design"** 节点插入可视化要求。不修改 Superpowers 流程顺序，仅规定**各场景下必须交付的可视化产物类型与顺序**。
+
+---
+
+## 一、术语定义（全文统一使用，禁止混用「方案」统称）
+
+| 术语 | 含义 | 典型交付物 | 能否单独满足前端/UI 的可视化义务 |
+|------|------|------------|----------------------------------|
+| **设计说明** | 写入 `design.md` 的文字结论（背景、决策、风险等） | Markdown 正文 | ❌ 不能 |
+| **结构图** | 辅助理解的示意图，非可交互 UI | Mermaid 流程图/架构图/ER 图、组件关系图 | ❌ 不能（前端/UI 场景） |
+| **方向预览** | 第一阶段必须交付的**可在浏览器中查看的 UI 预览**，用于确认布局与交互大方向 | Visual Companion 实时预览，或 `docs/<branch>/demo/direction-*.html` 简易 HTML 线框页 | ✅ 能（二选一，见第四节） |
+| **高保真 Demo** | 第二阶段可选的、接近最终实现风格的 Demo 页面 | `docs/<branch>/demo/*.html`（遵循 Demo 页面规范） | ❌ 不能替代方向预览 |
+| **备选方向** | 多个可选 UI/技术路线之一 | 每个备选方向各需一份**方向预览**（多预览并排）或一份预览 + 其余仅列差异点（单一聚焦） | 见第五节 |
+
+> **硬性边界**：在前端/UI 改造场景下，「设计说明 + 结构图」**不等于**已完成可视化义务；**必须**存在方向预览（Visual Companion 或简易 HTML）。
+
+---
+
+## 二、触发条件
+
+当 brainstorming 涉及以下**任一场景**时，进入本规则流程（先可视化验收，再输出设计说明）：
+
+| 场景 ID | 判定标准 |
+|---------|---------|
+| `UI` | 页面布局、组件结构、样式、交互行为任一发生变化 |
+| `FLOW` | 多步骤用户操作流或系统交互流 |
+| `ARCH` | 模块新增/删除、依赖关系、部署结构 |
+| `DATA` | 表结构、字段、实体关系 |
+| `COMPARE` | 存在 2 个及以上需用户抉择的可选路线（常与 `UI`/`ARCH` 等叠加） |
+
+**场景叠加时**：按 [三、流程优先级](#三流程优先级) 执行，不得用低要求场景的交付物替代高要求场景。
+
+---
+
+## 三、流程优先级
+
+发生冲突时，**自上而下优先**（上位规则覆盖下位）：
+
+```
+1. 前端/UI（场景 UI）→ 必须走 [四、前端/UI 两阶段工作流]；展示数量策略仅作用于「方向预览」的数量，不作用于是否做预览
+2. 非前端场景（FLOW / ARCH / DATA / 以及不含 UI 的 COMPARE）→ 走 [五、非前端可视化流程]
+3. 设计说明（文字）→ 仅在对应可视化/方向预览经用户确认后撰写
+```
+
+**禁止行为（前端/UI）**：
+
+- ❌ 仅用 AskQuestion + UI 方向简报（文字 ± 结构图）结束第一阶段
+- ❌ 用决策矩阵、Mermaid 布局草图替代方向预览
+- ❌ 在未完成方向预览确认前，将「备选方向」整段写入 `design.md` 并宣称设计已呈现
+- ❌ 跳过第一阶段，直接询问是否制作高保真 Demo
+
+---
+
+## 四、前端/UI 两阶段工作流（场景 `UI` 命中时强制执行）
+
+Agent **不可跳过阶段一**；阶段二由用户选择。阶段一、二的决策均须交给用户（AskQuestion），不得默认替用户选择。
+
+### 阶段一：方向预览（必选，验收门槛）
+
+**目标**：交付至少一份**方向预览**，供用户在浏览器中确认 UI 大方向。
+
+#### 步骤 1.1 — 选择预览实现方式（AskQuestion，必选其一）
+
+| 选项 | 实现 | 交付要求 |
+|------|------|---------|
+| **A) Visual Companion** | 浏览器实时渲染 | 用户能在浏览器中看到预览；保留预览过程或截图供确认；**Windows 须按 [8.3](#83-visual-companion-启动备忘windows) 启动** |
+| **B) 简易 HTML 线框** | 静态/弱交互 HTML 页面 | 写入 `docs/<branch>/demo/direction-<简述>.html`，须可在浏览器直接打开；页面顶部标注分支名、功能名、方向编号（若多个） |
+
+**引导示例**：
+
+> 进入 UI 方向预览。请选择预览方式：
+> - **A) Visual Companion**：浏览器实时渲染预览
+> - **B) 简易 HTML 线框**：生成可打开的 `direction-*.html` 线框页
+
+#### 步骤 1.2 — 确定展示数量（AskQuestion，仅影响预览份数）
+
+在已选定 A 或 B 之后，询问用户：
+
+| 模式 | 行为 | 约束 |
+|------|------|------|
+| **多预览并排** | 同时交付 2～3 份方向预览（多个 Companion 方案或多个 `direction-*.html`） | 每份须可独立打开/辨认；用户选定其一后再进入阶段二询问 |
+| **单一聚焦** | 仅交付 1 份方向预览 | **其余备选方向只能以差异列表描述**（不得用结构图或长篇文字替代第二、第三份预览） |
+
+**禁止**：将「单一聚焦」理解为「一个 Mermaid + 多段文字描述各备选方向」。
+
+#### 步骤 1.3 — 收集方向约束（两种预览方式均需）
+
+无论 A 或 B，须通过对话或 AskQuestion 明确至少以下维度（可与预览迭代合并进行）：
+
+1. 整体布局风格（侧边栏 / 顶栏 / 卡片网格 / 单页滚动等）
+2. 核心组件结构（表单、列表-详情、弹窗 vs 内联、Tab vs 跳转等）
+3. 关键交互行为（保存时机、刷新范围、批量操作等）
+4. 响应式策略（桌面优先 / 移动优先 / 兼顾）
+5. 色调与视觉风格（浅/深、品牌色、简约/丰富）
+
+维度确认结果写入 **UI 方向简报**（文字，可附结构图），但**简报不能替代步骤 1.1 的方向预览**。
+
+#### 步骤 1.4 — 用户确认（硬性关卡）
+
+须获得用户对**方向预览**的明确确认（认可某一预览或指定修改后再确认）。**未确认前禁止**：
+
+- 撰写完整 `design.md` 设计说明
+- 进入阶段二
+
+---
+
+### 阶段二：高保真 Demo（可选）
+
+阶段一确认后，Agent **必须**询问：
+
+> 方向预览已确认。是否需要制作**高保真 Demo 页面**？（将写入 `docs/<branch>/demo/`，更接近最终实现风格）
+
+| 用户回答 | Agent 行为 |
+|----------|------------|
+| **需要** | 先确认 [前端设计](#frontend-stack-ui) → 按 `design.md` 读取 `frontend-design` 并按其路由（参考索引 / `ui-frame` 子技能）→ 按 [Demo 页面规范](#demo-页面规范) 制作 → 浏览器展示或截图 → 可迭代 |
+| **不需要** | 不制作高保真 Demo；归档阶段一的方向预览与 UI 方向简报 |
+
+**阶段二不能替代阶段一**：高保真 Demo 是增量，不是「第一次可视化」。
+
+### 前端设计（场景 UI） {#frontend-stack-ui}
+
+- **时机**：进入阶段二，或撰写 `design.md` 前——若尚无「前端设计」节 → **AskQuestion**：美学模式（开放式 / 参考式；参考式须选 slug，见 `frontend-design` 参考索引）、UI 实现方式（至少纯 HTML/CSS/JS、antd；库见 `frontend-design` 约束式子技能表）。
+- **记录**：写入 `design.md`「前端设计」节（格式见 `doc-file-definition-design`）。
+- **高保真 Demo / 实现**：以 `design.md` 为准读取 `frontend-design`；**禁止**因无 `package.json` 静默默认为纯 HTML。
+
+---
+
+## 五、非前端可视化流程（场景 `FLOW` / `ARCH` / `DATA`，或不含 `UI` 的 `COMPARE`）
+
+### 5.1 输出形式
+
+| 场景 | 工具 | 交付物 | 位置 |
+|------|------|--------|------|
+| `FLOW` | Mermaid | 流程图 / 泳道图 | 对话中渲染 |
+| `ARCH` | Mermaid | 架构图 / 数据流图 / 时序图 | 对话中渲染 |
+| `DATA` | Mermaid | ER 图 | 对话中渲染 |
+| `COMPARE`（非 UI） | Mermaid / Canvas | 决策矩阵、对比图 | 对话中或 Canvas |
+
+### 5.2 展示数量策略（仅适用于本节场景）
+
+进入可视化前 AskQuestion：
+
+| 模式 | 行为 |
+|------|------|
+| **多图并排** | 同时输出 2～3 个 Mermaid/Canvas 变体，供横向比对 |
+| **单一聚焦** | 输出 1 个结构图；其余备选以文字差异列表描述 |
+
+复杂 `ARCH` 可分层次：先全景图 → 再局部放大（仍属「单一聚焦」的分步展示）。
+
+### 5.3 用户确认后
+
+输出设计说明；`COMPARE` 的结论写入 `design.md`。
+
+---
+
+## 六、场景叠加：`UI` + `COMPARE`
+
+同时命中时：
+
+1. **仍必须**完成 [四、阶段一] 的方向预览（每个待选 UI 方向各一份预览，或「多预览并排」）
+2. **禁止**用非 UI 的决策矩阵表替代 UI 方向预览
+3. 可在预览确认后，用结构图或表格补充**非布局类**维度对比（如性能、成本），作为设计说明附件
+
+---
+
+## 七、规范附录
+
+### Mermaid 图表规范（`FLOW` / `ARCH` / `DATA` / 非 UI 的 `COMPARE`）
+
+- 流程图：`flowchart` / `graph`；泳道：`journey` / `gantt`（带参与者）
+- ER：`erDiagram`；架构：`graph`；时序：`sequenceDiagram`
+- 节点使用中文；标出关键决策点（菱形）；必要时加图例
+
+### 方向预览（简易 HTML）规范（阶段一选项 B）
+
+- 路径：`docs/<branch>/demo/direction-<简述>.html`
+- 纯 HTML/CSS/JS；预览方式见 [九、Demo 文件本地预览](#九demo-文件本地预览)
+- 模拟核心布局与主交互路径，不追求完整业务逻辑
+- 页面顶部：分支名、功能名、方向标签
+
+### 高保真 Demo 页面规范（阶段二）
+
+- 路径：`docs/<branch>/demo/`（文件名自定，勿与 `direction-*.html` 混淆）
+- 先完成 [前端设计](#frontend-stack-ui)，再按 `design.md` 读取 **`frontend-design`** 并按其路由
+- 模拟目标 UI 的核心布局与交互；页面顶部标注分支名与功能名
+- 确认后随 `design.md` 归档
+
+### Canvas 规范（可选）
+
+复杂数据分析或非 UI 的 `COMPARE` 可使用 Canvas（`.canvas.tsx`）。
+
+---
+
+## 八、与 Superpowers 的衔接
+
+### 8.1 Present design 步骤中的插入点
+
+在 checklist 第 5 步中，按以下顺序执行：
+
+1. 判定命中的场景 ID（第二节）
+2. 按第三节优先级进入第四节或第五节流程
+3. **完成可视化验收**（前端 = 方向预览确认；非前端 = 结构图确认）
+4. 场景 `UI`：确认 [前端设计](#frontend-stack-ui) 并写入 `design.md`；再撰写其余设计说明
+5. 写入 `docs/<branch>/design.md`（及 Superpowers 自有 spec 路径，见 `doc-project-structure`）
+6. 归档：`direction-*.html`、高保真 Demo（若有）、已确认的结构图说明
+
+### 8.2 Visual Companion
+
+- Superpowers 中 Visual Companion 为可选能力；本规则在 **design 呈现 + 场景 `UI`** 下，将 Companion 定为阶段一选项 **A**
+- 选用 Companion 时，仍须完成阶段一用户确认；Companion 展示不能跳过
+- 阶段二高保真 Demo **始终**落地到 `docs/<branch>/demo/`，与 Companion 并行保留，不因使用过 Companion 而省略阶段二询问
+- **Windows 环境**：启动 Companion 前须阅读并遵循 [8.3 Visual Companion 启动备忘（Windows）](#83-visual-companion-启动备忘windows)；**禁止**直接使用 PATH 中的 `bash` 调用 `start-server.sh`
+
+### 8.3 Visual Companion 启动备忘（Windows）
+
+Superpowers 自带 `visual-companion.md` 以 macOS/Linux 为主；在 **Windows** 上 Agent 须按本节执行，否则极易出现退出码 `127`、`.superpowers/brainstorm/` 未生成、Companion 静默失败。
+
+#### 根因（必读）
+
+| 现象 | 原因 |
+|------|------|
+| `bash ... start-server.sh` → 退出码 **127** | `C:\Windows\System32\bash.exe` 是 **WSL 启动器**，不是 Git Bash |
+| `No such file or directory`（路径明明存在） | WSL 内 **无法识别** `C:/Users/...` 形式的 Windows 路径 |
+| 脚本未执行 | 未出现 `test-project/<name>/.superpowers/brainstorm/<session>/` |
+
+**禁止**：在未确认 shell 类型的情况下，写 `bash "C:/Users/.../start-server.sh"` 并假定会成功。
+
+#### 推荐启动方式（按优先级）
+
+**方式 1 — Git Bash + `--background`（Agent 首选）**
+
+- 使用 **Git Bash 可执行文件**，勿用 System32 的 `bash`：
+
+```powershell
+& "C:\Program Files\Git\bin\bash.exe" -lc `
+  "'/c/Users/<user>/.cursor/plugins/local/superpowers/skills/brainstorming/scripts/start-server.sh' --project-dir '/d/code/cursor/my_harness/test-project/<name>' --background"
+```
+
+- 路径约定（Git Bash / MSYS）：
+  - `C:\` → `/c/`
+  - `D:\` → `/d/`
+- Agent 调用 Shell 时对该命令使用 **后台执行**（等价 Superpowers 文档中的 `run_in_background: true`）
+- 从 stdout 或 `<project>/.superpowers/brainstorm/<session>/state/server-info` 读取 JSON，保存 `url`、`screen_dir`、`state_dir`
+
+**方式 2 — WSL + `/mnt/<盘符>` 路径**
+
+```powershell
+wsl bash /mnt/c/Users/<user>/.cursor/plugins/local/superpowers/skills/brainstorming/scripts/start-server.sh `
+  --project-dir /mnt/d/code/cursor/my_harness/test-project/<name> --background
+```
+
+- 必须使用 **`/mnt/c/...`**，禁止 `C:/...`
+
+#### 启动后 Agent 流程
+
+1. 确认 `state/server-info` 存在；若无或存在 `server-stopped`，按上文方式 **重试启动**（Companion 空闲约 30 分钟会自动退出）
+2. 用 **Write** 向 `screen_dir` 写入新的 `*.html`（**内容片段**即可，见 Superpowers `visual-companion.md`；勿复用文件名）
+3. 在 **cursor-ide-browser** 中 `browser_navigate` 到 `url`（**禁止** `file://`）
+4. 用户反馈后读取 `state/events`（若存在）并与终端消息合并
+5. 下一问若不需浏览器，推送 `waiting.html` 清屏
+6. 会话结束可执行 Superpowers `stop-server.sh`（同样须用 Git Bash 或 WSL 正确路径）
+
+#### 失败降级（须告知用户）
+
+若以上两种方式均无法启动：
+
+1. **明确告知** Visual Companion 在当前环境不可用及原因（如未安装 Git Bash、WSL 路径错误等）
+2. **AskQuestion** 是否改选阶段一 **B) 简易 HTML 线框**，并改走 [九、Demo 文件本地预览](#九demo-文件本地预览) 中的 **`preview-html`** 技能
+3. **不得**在未尝试本节推荐方式、未告知用户的情况下，静默改用 HTML 线框并仍称使用了 Companion
+
+#### 自检（Windows + 选项 A）
+
+- [ ] 未使用 `C:\Windows\System32\bash.exe` 直接调脚本
+- [ ] `--project-dir` 指向**逻辑开发根目录**（如 `test-project/<name>`）
+- [ ] 已读到 `server-started` JSON 或 `state/server-info`
+- [ ] 已在内置浏览器打开 Companion `url` 并完成至少一次 `screen_dir` 写入
+
+---
+
+## 九、Demo 文件本地预览
+
+在 Cursor IDE 内置浏览器中预览本地 HTML 时，**按所选路径二选一**，不得混用、不得用 `file://`：
+
+| 用户选择 | Agent 做法 |
+|----------|------------|
+| **Visual Companion**（阶段一选项 A） | 按 Superpowers **Visual Companion** 文档与流程执行（启停、`screen_dir`、迭代预览等）；**Windows 额外遵循 [8.3](#83-visual-companion-启动备忘windows)** |
+| **非 Visual Companion**（阶段一选项 B、阶段二高保真 Demo、`docs/<branch>/demo/` 下已归档 HTML） | 读取并执行 **`preview-html`** 技能 |
+
+具体命令、脚本路径、内置浏览器打开方式：非 Visual Companion 以 **`preview-html`** 技能为准；Visual Companion 在 Windows 上以 **本节 8.3** 与 Superpowers `visual-companion.md` 为准。
+
+---
+
+## 十、自检清单（Agent 在宣称「设计已呈现」前必查）
+
+**场景 `UI` 时：**
+
+- [ ] 已 AskQuestion 选择预览方式（Companion / 简易 HTML）
+- [ ] 若选 Companion：**Windows 已按 [8.3](#83-visual-companion-启动备忘windows) 启动**（非 System32 `bash`）；已读到 `server-info` / `server-started`
+- [ ] 已按第九节在 IDE 内置浏览器完成方向预览（Companion 或 `preview-html`，非 `file://`）
+- [ ] 若有多备选方向且用户选「多预览并排」，已有 2～3 份可区分的预览
+- [ ] 用户已明确确认方向预览
+- [ ] 已询问是否需要高保真 Demo（无论用户选要/不要）
+- [ ] `design.md` 已含「前端设计」（场景 `UI`）；高保真 Demo 与记录一致
+- [ ] 未用「仅文字 + 结构图」替代方向预览
+
+**非 `UI` 场景时：**
+
+- [ ] 已交付对应 Mermaid/Canvas 结构图
+- [ ] 用户已确认理解
+- [ ] 设计说明在可视化确认之后输出

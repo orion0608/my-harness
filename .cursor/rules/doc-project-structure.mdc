@@ -1,0 +1,209 @@
+---
+description: 项目文档结构定义——声明有哪些文档、存放在哪里、何时创建/更新。用业务时机而非具体技能名描述触发点。格式要求由对应 doc-file-definition-* 技能定义。
+alwaysApply: true
+---
+
+# 项目文档结构（Document Project Structure）
+
+本规则定义项目文档的**目录布局、Git 跟踪策略、文档清单、编写时机（业务触发点）和决策矩阵**。
+不定义文档的具体格式。编写文档时，读取对应的格式技能：
+
+**分支过程文档：**
+- `requirement.md` → doc-file-definition-requirement
+- `design.md` → doc-file-definition-design
+- `plan.md` → doc-file-definition-plan
+- `devlog.md` → doc-file-definition-devlog
+- `accept-log.md` → doc-file-definition-accept-log
+- `review.md` → doc-file-definition-review
+- `test-report.md` → doc-file-definition-test-report
+- `release-notes.md` → doc-file-definition-release-notes
+- `issues.md` → doc-file-definition-issues
+
+**全局跟踪文档：**
+- `README.md` → doc-file-definition-readme
+- `CHANGELOG.md` → doc-file-definition-changelog
+- `version.md` → doc-file-definition-version
+- `docs/ARCHITECTURE.md` → doc-file-definition-architecture
+- `docs/API.md` → doc-file-definition-api
+- `docs/DATABASE.md` → doc-file-definition-database
+
+---
+
+## 强制约束 — 分支开发
+
+**所有开发工作必须在独立分支上进行，严禁直接在 `main`（或 `master`）分支上编写代码。**
+
+- 任何功能开发、Bug 修复、重构、实验性改动等，必须创建对应类型的分支（如 `rp/<name>`、`bug/<name>`）
+- `main` 分支**仅用于接收**已通过 `/accept` 完整验收流程的合入，保持稳定可发布状态
+- Agent 在执行 `/design`、`/implement`、`/debug` 等开发命令前，**必须先检查当前分支**；若处于 `main` 分支，必须引导用户创建对应分支后才能继续
+- 该约束同时适用于 Harness 自身开发与 test-project 下的验证项目
+
+**创建分支属于准备工作，不属于开发动作。** 分支的创建和切换仅是为后续工作建立隔离的工作区，不涉及任何设计决策或代码变更。Agent 在引导用户创建分支时无需犹豫——这是进入设计/实现之前的必要前置步骤，与"未设计前禁止编码"不构成冲突。
+
+---
+
+## Part A — 目录布局
+
+```
+project-root/
+├── README.md                              ✅ 跟踪
+├── CHANGELOG.md                           ✅ 跟踪
+├── version.md                             ✅ 跟踪
+├── .gitignore
+│
+├── docs/
+│   ├── ARCHITECTURE.md                    ✅ 跟踪
+│   ├── API.md                             ✅ 跟踪（可选）
+│   ├── DATABASE.md                        ✅ 跟踪（可选）
+│   │
+│   ├── superpowers/                       ❌ 不跟踪
+│   │   ├── specs/                         Superpowers 设计文档
+│   │   └── plans/                         Superpowers 实现计划
+│   │
+│   └── <branch-id>/                       ❌ 不跟踪
+│       ├── requirement.md                 必写
+│       ├── design.md                      必写
+│       ├── plan.md                        必写
+│       ├── devlog.md                      必写
+│       ├── accept-log.md                  必写
+│       ├── review.md                      选写
+│       ├── test-report.md                 选写
+│       ├── release-notes.md               选写
+│       ├── issues.md                      选写
+│       └── demo/                          选写
+```
+
+---
+
+## Part B — Git 跟踪规则
+
+| 路径 | 跟踪 | 原因 |
+|------|:--:|------|
+| `README.md` | ✅ | 项目入口 |
+| `CHANGELOG.md` | ✅ | 发布历史 |
+| `version.md` | ✅ | 版本标记 |
+| `docs/ARCHITECTURE.md` | ✅ | 全局架构参考 |
+| `docs/API.md` | ✅ | 全局 API 参考 |
+| `docs/DATABASE.md` | ✅ | 全局数据库参考 |
+| `docs/<branch-id>/**` | ❌ | 分支过程产物，随分支清理 |
+| `docs/superpowers/**` | ❌ | Superpowers 原生产出，由 Superpowers 自行管理 |
+
+### 必需的 `.gitignore` 条目
+
+```gitignore
+docs/*/
+```
+
+> `docs/*/` 排除 `docs/` 下所有子目录（分支过程文档 + superpowers），但不影响 `docs/` 根下的一级文件。
+
+---
+
+## Part C — 分支过程文档（`docs/<branch-id>/`）
+
+各文档的正文结构、模板与写作要求，见文首映射表中对应的 `doc-file-definition-*` 技能；本节仅规定必写性、创建/触发时机及流程说明。
+
+### requirement.md（必写）
+
+**创建时机**：功能开发开始、需求明确后
+
+### design.md（必写）
+
+**创建时机**：头脑风暴完成、设计定稿后
+
+**副本说明**：Superpowers 同步写入 `docs/superpowers/specs/`，同时在 `docs/<branch-id>/design.md` 保留一份。
+
+### plan.md（必写）
+
+**创建时机**：实现计划定稿后、开始编码前
+
+**副本说明**：Superpowers 同步写入 `docs/superpowers/plans/`，同时在 `docs/<branch-id>/plan.md` 保留一份。
+
+### devlog.md（必写）
+
+**创建时机**：每次 `git commit` 后追加一条记录
+
+### accept-log.md（必写）
+
+**创建时机**：实现过程中发生以下任一事件时追加一条记录
+
+**触发事件**：
+- 计划中的某项被**修改**（与原计划不同）
+- 计划中的某项被**拒绝/跳过**（决定不做）
+- 计划外的变更被**同意**（新增需求或调整）
+
+### review.md（选写）
+
+**创建时机**：每次代码审查完成后
+
+### test-report.md（选写）
+
+**创建时机**：测试执行完成后
+
+### release-notes.md（选写）
+
+**创建时机**：分支合并/发布前
+
+### issues.md（选写）
+
+**创建时机**：发现 Bug 或技术债时追加一条记录
+
+### demo/（选写）
+
+**创建时机**：涉及前端 UI 改造或业务流程改造时，在计划定稿后、开始编码前创建
+
+**约定**：目录用途与产物类型见 `brainstorming-visual-enhancement` 规则；Demo 仅用于确认理解，是过程产物，不跟踪。
+
+---
+
+## Part D — 全局跟踪文档
+
+| 文档 | 创建时机 | 更新时机 |
+|------|---------|---------|
+| `README.md` | 项目初始化 | 功能/范围/技术栈/架构重大变更时 |
+| `CHANGELOG.md` | 项目初始化 | 每次分支合并/发布时追加 |
+| `version.md` | 项目初始化 | 版本号变更时 |
+| `docs/ARCHITECTURE.md` | 首个非平凡模块出现时 | 架构变更时 |
+| `docs/API.md` | 首个 API 端点出现时 | API 变更时 |
+| `docs/DATABASE.md` | 首张数据表出现时 | 数据库 Schema 变更时 |
+
+---
+
+## Part E — 决策矩阵
+
+| 发生了什么（业务事件） | 需创建/更新的文档 |
+|-----------------------|-------------------|
+| 需求明确、准备开始设计 | `docs/<branch>/requirement.md` |
+| 头脑风暴完成、设计定稿 | `docs/<branch>/design.md` + `docs/superpowers/specs/` 对应文件 |
+| 实现计划定稿 | `docs/<branch>/plan.md` + `docs/superpowers/plans/` 对应文件 |
+| 每次 git commit | `docs/<branch>/devlog.md` 追加一条 |
+| 计划修改、拒绝或计划外变更被同意 | `docs/<branch>/accept-log.md` 追加一条 |
+| 代码审查完成 | `docs/<branch>/review.md` 追加一条 |
+| 测试执行完成 | `docs/<branch>/test-report.md` |
+| 发现 Bug 或技术债 | `docs/<branch>/issues.md` 追加一条 |
+| 分支合并/发布 | `docs/<branch>/release-notes.md` → 提取摘要到 `CHANGELOG.md` |
+| 新增模块或架构变更 | `docs/ARCHITECTURE.md` + `README.md` |
+| 新增/修改 API | `docs/API.md` |
+| 数据库 Schema 变更 | `docs/DATABASE.md` |
+| 版本号变更 | `version.md` |
+| 技术栈或项目范围变更 | `README.md` |
+
+---
+
+## Part F — 分支合入合成流程
+
+当分支准备合并时，Agent 应：
+
+1. 读取 `docs/<branch-id>/` 下所有过程文档
+2. 从 `release-notes.md` 提取摘要，追加到 `CHANGELOG.md`
+3. 根据决策矩阵，将增量信息合并到 `docs/ARCHITECTURE.md`、`docs/API.md`、`docs/DATABASE.md`
+4. 如有版本号变更，更新 `version.md`
+5. 如有项目范围/技术栈变更，更新 `README.md`
+6. 分支过程文档（`docs/<branch-id>/`）不合并到主分支，随 feature 分支清理
+
+---
+
+## 重要约束
+
+- **不得修改** `docs/superpowers/` 下的任何内容——Superpowers 自行管理其产出
+- 分支过程文档仅在 feature 分支存在期间维护，不进入主分支历史
+- 全局跟踪文档的更新应在分支合入时一并进行，避免在实现过程中修改全局文档造成冲突

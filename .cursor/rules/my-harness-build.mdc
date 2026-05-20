@@ -1,0 +1,194 @@
+---
+description: my-harness-build — Harness 设计原理、操作边界、Cursor 扩展机制要求，以及非 Harness 项目的严格禁止
+alwaysApply: true
+---
+
+# my-harness-build
+
+> **路径约定**：本文所有以 `.cursor/` 开头的相对路径，均指 **项目顶级目录** `my_harness` （my_harness是项目根目录，也是项目名称）下的 `.cursor/` 子目录。其他项目的 `.cursor/` 目录不在本文约定范围内。
+
+## 一、Harness 设计原理
+
+Harness 是对 **Superpowers 插件体系** 的增强层，通过在项目级别叠加 Rules、Skills、Commands、Subagents、Hooks，弥补 Superpowers 在文档管理、触发方式、可视化沟通方面的不足。
+
+**核心约束：不改动 Superpowers 任何内容，仅在本项目范围内新增/修改/删除。**
+
+全部设计围绕以下原则展开：
+
+### 1. 信源唯一性（Single Source of Truth）
+
+每一类知识有且仅有一个存放位置：
+
+| 知识类型 | 唯一源头 | 存放位置 |
+|---------|---------|---------|
+| 文档目录结构、Git 追踪策略、决策矩阵 | `doc-project-structure` 规则 | `.cursor/rules/` |
+| 每个文档的格式、模板、内容要求 | `doc-file-definition-*` 技能 | `.cursor/skills/` |
+| 前端设计（style+frame 路由、参考索引、ui-frame 子技能） | `frontend-design` 技能 | `.cursor/skills/frontend-design/` |
+| 技术架构设计（0-1 初建 / 1-N 迭代判断 / 模块、依赖、契约、错误、测试、迁移） | `architecture-design` 技能 | `.cursor/skills/architecture-design/` |
+| 架构思考接入 Superpowers brainstorming 的方式 | `brainstorming-architecture-thinking-enhancement` 规则 | `.cursor/rules/` |
+| 本地 HTML HTTP 预览与内置浏览器打开 | `preview-html` 技能 | `.cursor/skills/preview-html/` |
+| 用户触发入口、工作流步骤 | Commands | `.cursor/commands/` |
+| 软件开发流程 | Superpowers 技能 | `C:\Users\orion\.cursor\plugins\local\superpowers\` |
+| 全局优先级裁决 | `priority-resolution` 规则 | `.cursor/rules/` |
+| Agent 对外沟通风格（精简、去噪、精确优先） | `concise-communication` 规则 | `.cursor/rules/` |
+
+**任何信息不得在两处同时定义。** Commands 不复制文档路径，Skills 不复制决策矩阵，Rules 不复制文档格式。
+
+### 2. 动态引用机制
+
+Rules、Commands、Skills 之间如需相互引用，**只能引用目标的名词**（规则名、技能名、命令名），不得通过文件路径进行引用。
+
+> ✅ "详见 `doc-project-structure` 规则"
+> ❌ "详见 `.cursor/rules/doc-project-structure.mdc`"
+
+这样当目标文件的存放位置或文件名发生变化时，引用方无需修改。
+
+### 3. 业务时机触发（Business Timing）
+
+文档维护的触发点使用**业务语义**描述，不绑定具体技能名：
+
+> ✅ "头脑风暴完成、设计定稿后"
+> ❌ "brainstorming 技能执行完毕后"
+
+这样即使未来技能名变化或流程调整，文档维护规则无需修改。
+
+### 4. 互补不冲突（Complementarity Priority）
+
+| 冲突域 | 裁决 |
+|--------|------|
+| 软件开发流程冲突 | Superpowers 绝对优先 |
+| 文档维护规则冲突 | `doc-project-structure` 绝对优先 |
+| 不同路径、无冲突 | 同时满足 |
+
+详见 `priority-resolution` 规则
+
+### 5. 自包含（Self-Contained）
+
+Harness 内的每个文件不引用外部技能或外部路径。Rules 指向同项目的 Skills，Commands 指向同项目的 Rules，形成闭环。
+
+---
+
+## 二、Cursor 扩展机制要求
+
+Harness 使用 Cursor 的五种扩展机制。创建和维护时遵循对应内置技能规范：
+
+| 扩展类型 | 存放位置 | 格式要求 | 创建规范 |
+|---------|---------|---------|---------|
+| **Skills（顶层）** | `.cursor/skills/<name>/SKILL.md` | YAML frontmatter + Markdown 正文 | 遵循 `create-skill` 内置技能 |
+| **Skills（子技能）** | `.cursor/skills/<parent>/<sub>/SKILL.md` | 同上 | 由父技能目录表登记；仅允许在已定义的父技能下扩展 |
+| **Rules** | `.cursor/rules/<name>.mdc` | YAML frontmatter（`description`/`globs`/`alwaysApply`）+ Markdown | 遵循 `create-rule` 内置技能 |
+| **Commands** | `.cursor/commands/<name>.md` | Markdown 文件，有标题（`#`）和内容即可 | 无需复杂规范 |
+| **Subagents** | `.cursor/subagents/<name>.md` | YAML frontmatter（`name`/`description`）+ Markdown 正文（system prompt） | 遵循 `create-subagent` 内置技能 |
+| **Hooks** | `.cursor/hooks.json` + `.cursor/hooks/` | JSON 配置文件 + 命令脚本或 prompt hook | 遵循 `create-hook` 内置技能 |
+
+创建或修改以上任何扩展时，Agent **必须先行读取对应的内置技能文件并遵循其规范**。
+
+### 子技能约定
+
+部分顶层技能允许在其目录下挂载**子技能**（如 `frontend-design` 下 `ui-frame/antd`）。约定如下：
+
+- **顶层技能**可被 Cursor 自动发现；**子技能**由父技能目录表登记，Agent 按父技能指引按需读取
+- 新增子技能：在父技能约定目录下创建 + `SKILL.md`（`frontend-design` 开放式 → `free-style/`；库 → `ui-frame/<名>/`；参考 slug → `ui-style/<slug>/` 数据目录，并更新 `frontend-design` 参考索引），并更新父技能子技能表
+- 跨组件引用子技能时，使用**子技能名称**（如 `antd` 子技能），不得硬编码文件路径
+- 当前允许挂载子技能的父技能：`frontend-design`、`lesson-record`（`experience-summary-skill/`）
+
+---
+
+## 三、操作边界 — 所有修改仅限于此目录
+
+`d:\code\cursor\my_harness\` 是本 Harness 项目的根目录，一切操作**严格限定在此目录范围内**：
+
+| 可操作 | 禁止操作 |
+|--------|----------|
+| `.cursor/rules/*.mdc` | `C:\Users\orion\.cursor\` 下的任何文件 |
+| `.cursor/skills/*/SKILL.md`（顶层技能） | `C:\Users\orion\.cursor\plugins\` 下的任何文件 |
+| `.cursor/skills/*/*/SKILL.md`（子技能） | `C:\Users\orion\.cursor\skills-cursor\` 下的任何文件 |
+| `.cursor/commands/*.md` | Superpowers 目录下的任何文件 |
+| `.cursor/subagents/*.md` | 其他项目目录下的任何文件 |
+| `.cursor/hooks.json`、`.cursor/hooks/*` | |
+| 项目根目录的 `README.md`、`Dependency-Relationship-Map.md` 等 | |
+
+## 四、严禁行为
+
+1. **禁止修改 Superpowers**：`C:\Users\<userName>\.cursor\plugins\local\superpowers\` 下的内容只读，绝不修改
+2. **禁止修改用户级配置**：`C:\Users\<userName>\.cursor\` 下的 rules、skills、commands、hooks 等用户级内容，绝不修改
+3. **禁止修改内置技能**：`C:\Users\<userName>\.cursor\skills-cursor\` 下的内容，绝不修改
+4. **禁止修改外部项目**：其他项目目录，绝不修改
+5. **非 my-harness 项目严格禁止创建扩展**：在任何非 `my_harness` 的项目中，严禁创建 skills、rules、commands、subagents、hooks。这些 Cursor 扩展机制仅允许存在于 Harness 项目自身范围内，不得向其他项目泄漏或复制。
+
+## 五、唯一可操作范围
+
+```
+d:\code\cursor\my_harness\
+├── README.md
+├── .gitignore
+└── .cursor/
+    ├── rules/
+    ├── skills/
+    ├── commands/
+    ├── subagents/
+    ├── hooks.json
+    └── hooks/
+```
+
+以上目录之外，均为禁区。
+
+## 六、test-project 目录
+
+`test-project/` 目录用于存放 Harness 验证所用的实际测试软件项目。
+
+- 该目录**不参与 Git 跟踪**（已加入 `.gitignore`）
+- 需要验证 Harness 功能时，将具体的测试软件项目放入此目录下
+- **用户要求创建测试项目时**，必须在此目录下创建（如 `test-project/<project-name>/`），不得在其他路径新建用于 Harness 验证的项目
+- **开始在某子项目上验证 Harness 时**，使用 `/myharness-test-project <path>` 激活逻辑工作区（`<path>` 必须在 `test-project/` 下）
+- 该目录仅供 Harness 开发者验证使用，不影响 Harness 本身的代码结构
+
+### 工作区约束（Harness 验证有效性）
+
+验证 Harness 时，Cursor 工作区根目录必须保持为 **`my_harness` 项目根**，以便 Rules、Skills、Commands 等扩展被正确加载。对 `test-project/` 下子项目的操作采用**逻辑工作区**方式，不得在物理上切换工作区：
+
+| 允许 | 禁止 |
+|------|------|
+| 在对话与上下文中明确「当前逻辑目标」为 `test-project/<name>/`，读写、Shell、Git 等操作以该路径为 cwd | 使用 `move_agent_to_root`、`move_agent_to_cloned_root`、`create_project` 等将 Agent 工作区根目录迁出 `my_harness` |
+| 使用绝对路径或相对于 `my_harness` 的路径访问测试项目文件 | 在 `test-project/` 外单独打开子项目作为 Cursor 工作区进行 Harness 验证 |
+
+**原因**：工作区根目录离开 `my_harness` 后，本项目的 `.cursor/` 扩展不会被加载，验证结果无效。
+
+### 跨项目隔离（强制）
+
+激活某测试子项目的逻辑工作区后（`<logical-root>` 为 `test-project/<name>/`），**严禁跨项目读取** `test-project/` 下其它子项目的内容。各测试项目彼此独立，不得作为当前开发的参考源、上下文或代码来源。
+
+| 允许 | 禁止 |
+|------|------|
+| 读写 `<logical-root>` 内的文件与 Git 历史 | 使用 Read、Grep、Glob 等读取 `test-project/<其它项目>/` 下的任何文件 |
+| 列出 `test-project/` 顶层目录名（用于切换或 `/myharness-test-project` 选项目） | 在 Shell 中 `cd`、`cat`、`type` 等访问其它测试子项目路径 |
+| 读写 `my_harness` 根下的 Harness 元数据（`.cursor/`、`README.md` 等） | 将其它测试项目的代码、文档、配置当作当前项目的实现依据或模板 |
+| 用户明确要求对比或切换子项目时，按新指令执行 | 为「找参考实现」而主动浏览、搜索其它测试子项目 |
+
+**原因**：测试项目用于隔离验证不同场景；跨项目读取会污染上下文、混淆需求边界，并导致 Agent 误用无关项目的约定或半成品代码。
+
+---
+
+## 七、修改 Harness 的检查
+
+### 修改前（决策）
+
+每次新增或改动 Harness 组件（Rules、Skills、Commands 等）前，Agent 须自问：
+
+1. **是否必要**：该改动是否解决真实缺口？能否用既有规则/技能/命令覆盖，而非再叠一层？
+2. **是否引发二义性**：措辞、触发条件或与其它组件的边界是否会让 Agent 或用户产生多种合理解读？信源是否仍唯一？
+3. **能否精确简化**：在保持语义无歧义的前提下，能否用更短、更少的条目或引用替代冗长方案？（与 `concise-communication` 一致：精确优先，不为简短而损义）
+
+三项均不满足时，应暂停改动、向用户说明理由，或先收敛方案再动手。
+
+### 修改后（联动）
+
+每次修改 Harness 项目内的任何内容后，Agent 必须执行以下两项检查：
+
+### 1. 检查依赖关系图是否需要更新
+
+阅读 `Dependency-Relationship-Map` 文档，判断本次修改是否导致依赖关系发生变化（如新增了引用关系、移除了旧引用、组件重命名等）。如有变化，同步更新该文档。
+
+### 2. 检查关联文档是否需要同步更新
+
+根据 `Dependency-Relationship-Map` 文档中记录的依赖关系，判断本次修改是否触发了关联文档的同步义务。如有，逐一完成对应的联动更新。
