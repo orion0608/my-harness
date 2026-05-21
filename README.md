@@ -15,13 +15,14 @@ my_harness/
 ├── README.md
 ├── .gitignore
 └── .cursor/
-    ├── rules/                          7 个规则
+    ├── rules/                          8 个规则
     │   ├── my-harness-build.mdc         Harness 设计原理、操作边界与扩展约束
     │   ├── priority-resolution.mdc     优先级裁决
     │   ├── concise-communication.mdc   精简沟通
     │   ├── doc-project-structure.mdc   软件开发项目的文档架构
     │   ├── brainstorming-visual-enhancement.mdc  可视化增强
     │   ├── brainstorming-architecture-thinking-enhancement.mdc  架构思考增强（接入 architecture-design）
+    │   ├── using-subagent-enhancement.mdc  Subagent 使用增强（默认尽可能派发）
     │   └── lesson-capture.mdc          经验捕获与技能提炼
     ├── skills/                         19 个技能目录
     │   ├── doc-file-definition-requirement/
@@ -86,7 +87,7 @@ my_harness/
 
 ## 文档体系
 
-由 `doc-project-structure` 规则定义。分支过程文档 9 个（5 必写 + 4 选写），全局跟踪文档 6 个。决策矩阵映射业务事件到文档动作。详见该规则。
+由 `doc-project-structure` 规则定义。分支过程文档 9 个（5 必写 + 4 选写），全局跟踪文档 6 个；功能分支须绑定独立 git worktree（`main` 仅驻留主检出）。决策矩阵映射业务事件到文档动作。详见该规则。
 
 ---
 
@@ -173,13 +174,13 @@ my_harness/
 | `/git-list-branch-all` | 列出所有未 accept 的文档管理分支 |
 | `/git-list-branch-bug` | 列出 Bug 类型未 accept 分支 |
 | `/git-list-branch-rp` | 列出需求类型未 accept 分支 |
-| `/git-current-branch-info` | 打印当前分支完整信息 |
+| `/git-current-branch-info` | 打印当前分支完整信息（含 worktree 绑定） |
 | `/git-current-branch-commit` | 提交当前分支变更 |
 | `/git-current-branch-merge` | 合并当前分支到主分支 |
 | `/git-current-branch-push` | 推送当前分支到远端 |
 | `/git-init` | 初始化 Git 仓库 |
 | `/git-load [远端]` | 从远端同步项目（本地为空时） |
-| `/git-current-branch-delete` | 删除当前分支（main 禁止删除，需二次确认） |
+| `/git-current-branch-delete` | 删除分支并移除绑定 worktree（main 禁止删除，需二次确认） |
 
 ### 体系帮助
 | 命令 | 说明 |

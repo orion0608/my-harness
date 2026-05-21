@@ -29,16 +29,40 @@ alwaysApply: true
 
 ---
 
-## 强制约束 — 分支开发
+## 强制约束 — 分支与 worktree 开发
 
-**所有开发工作必须在独立分支上进行，严禁直接在 `main`（或 `master`）分支上编写代码。**
+**所有开发工作必须在独立分支上进行，且每个功能分支必须绑定到独立的 git worktree；严禁直接在 `main`（或 `master`）主检出目录上开发功能分支代码。**
+
+### 分支
 
 - 任何功能开发、Bug 修复、重构、实验性改动等，必须创建对应类型的分支（如 `rp/<name>`、`bug/<name>`）
-- `main` 分支**仅用于接收**已通过 `/accept` 完整验收流程的合入，保持稳定可发布状态
-- Agent 在执行 `/design`、`/implement`、`/debug` 等开发命令前，**必须先检查当前分支**；若处于 `main` 分支，必须引导用户创建对应分支后才能继续
+- `main`（或 `master`）**仅驻留于主检出**（仓库根目录或项目指定的主 worktree 路径），**仅用于接收**已通过 `/accept` 完整验收流程的合入，保持稳定可发布状态
+- 禁止在 `main` 上 `git checkout` 切换到功能分支后继续编码；功能分支代码只能在**该分支绑定的 worktree 目录**中修改
+
+### worktree 绑定
+
+- 创建功能分支时，须**同时**创建并检出对应 worktree（`git worktree add`）；不得仅在主检出内 `git checkout -b` 后开发
+- 每个功能分支在同一仓库内**有且仅有一个**绑定的 worktree 路径；路径命名建议：`.worktrees/<branch-slug>`（若已存在 `.worktrees` 或 `worktrees` 目录则沿用项目既有约定）
+- 判定「当前是否在功能分支的绑定 worktree 中」：`git rev-parse --git-dir` 与 `git rev-parse --git-common-dir` 解析为**不同路径**，且 `git rev-parse --show-superproject-working-tree` 为空（排除子模块误判）
+- 分支删除或 `/accept` 合入完成后，须移除该分支的 worktree（`git worktree remove`），再删除分支引用
+
+### Agent 门禁
+
+- 执行 `/design`、`/implement`、`/debug` 等开发命令前须检查：
+  1. **非** `main` / `master` 分支；否则引导创建功能分支 + worktree
+  2. 当前目录处于该分支的**绑定 worktree**；否则引导 `git worktree add`（或切换到已存在的绑定路径），**不得**仅在主检出内切换分支后继续
+- 具体创建步骤可参考 Superpowers `using-git-worktrees` 技能；本规则规定**必须**绑定，不替代该技能的隔离检测与目录选择流程
+
+### test-project 逻辑工作区
+
+- 验证 `test-project/<name>/` 时，Cursor 工作区根目录仍须为 `my_harness`（见 `my-harness-build`）；功能分支的 worktree 建在**逻辑目标仓库**下（如 `test-project/<name>/.worktrees/<branch-slug>/`）
+- Agent 对该子项目的 Shell、读写、Git 操作以**绑定 worktree 路径**为 cwd，不得以主检出路径代替
+
+### 其它
+
 - 该约束同时适用于 Harness 自身开发与 test-project 下的验证项目
 
-**创建分支属于准备工作，不属于开发动作。** 分支的创建和切换仅是为后续工作建立隔离的工作区，不涉及任何设计决策或代码变更。Agent 在引导用户创建分支时无需犹豫——这是进入设计/实现之前的必要前置步骤，与"未设计前禁止编码"不构成冲突。
+**创建分支与 worktree 属于准备工作，不属于开发动作。** 仅建立隔离工作区，不涉及设计决策或代码变更；Agent 在引导时无需犹豫——这是进入设计/实现之前的必要前置步骤，与「未设计前禁止编码」不构成冲突。
 
 ---
 

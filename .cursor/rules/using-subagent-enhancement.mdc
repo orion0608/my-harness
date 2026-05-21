@@ -1,0 +1,64 @@
+---
+description: Subagent 使用增强——默认尽可能派发子代理以降低上下文噪点并提升并行效率；满足判定时不再询问是否启动。
+alwaysApply: true
+---
+
+# Subagent 使用增强
+
+补充 Superpowers 中与 subagent 相关的技能（`subagent-driven-development`、`dispatching-parallel-agents`、`requesting-code-review` 等）：**默认尽可能使用 subagent**，满足判定时**不再** AskQuestion 询问「是否启动 subagent / 子代理」。不改 Superpowers 技能步骤顺序与子代理 prompt 模板。
+
+## 优先级
+
+| 序 | 目标 | 说明 |
+|----|------|------|
+| **第一** | 降低上下文噪点 | 子代理隔离上下文；父代理只保留协调所需信息，向 Task 构造精准、自洽的 prompt |
+| **第二** | 提升效率 | 任务可合理划分且无强顺序依赖时，并行或逐任务派发 |
+
+## 默认策略
+
+**同时满足「适用」且不满足「不适用」→ 直接派发 subagent（Task 工具），一句简短声明即可；禁止 AskQuestion 询问是否使用 subagent。**
+
+## 判定
+
+### 适用
+
+- 实现计划含多数相互独立的任务 → 默认 `subagent-driven-development`
+- 2+ 独立问题域（不同测试文件、子系统、并行调查）→ `dispatching-parallel-agents`
+- 广域代码库探索（多目录 / 多命名约定）→ `explore` 类 subagent
+- 代码审查、spec / quality 复核 → 按 Superpowers 模板派发 reviewer subagent
+- 单项任务上下文量大，或父会话已积累大量与任务无关的历史
+
+### 不适用
+
+- 任务强耦合，必须在同一会话内连续共享状态
+- 极简单步（父代理数轮内可完成且无上下文污染）
+- 多个 subagent 会争用同一 mutable 资源且无法隔离
+- 用户在本会话中**已明确**要求 inline / 同会话执行
+
+## 接入点
+
+### 全局
+
+在 broad 探索、并行修复、计划执行、审查派发前 → 按上表判定 → 适用则直接 Task。
+
+### writing-plans → Execution Handoff
+
+```
+Plan 保存完成
+  【本规则】独立任务占多数 → 声明「默认 Subagent-Driven」→ 读取 subagent-driven-development 并开始派发
+  否则 → 可用 AskQuestion 在 Subagent-Driven / Inline 间选择（仅此场景可询问执行模式）
+原步骤：Which approach?
+```
+
+## 边界
+
+- Superpowers 流程顺序与子代理 prompt 模板绝对优先（`priority-resolution`）
+- 本规则仅插入「默认派发、少询问」决策，不跳过 HARD-GATE、不合并步骤
+- 与 subagent 无关的用户-facing 选择（产品方向、破坏性操作授权等）仍须 AskQuestion
+
+## 自检
+
+- [ ] 适用场景已直接 Task，未 AskQuestion「是否启动 subagent」
+- [ ] 子代理 prompt 含完整任务文本与约束，未让其继承父会话全文
+- [ ] 独立任务已考虑并行派发
+- [ ] 不适用场景未强行拆 subagent

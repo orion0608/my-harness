@@ -1,0 +1,36 @@
+---
+description: 代码审查前端增强——在 requesting-code-review 派发子代理前，用内置浏览器验证交互并截图确认页面。
+alwaysApply: true
+---
+
+# 代码审查前端增强
+
+补充 Superpowers **`requesting-code-review`**：在 **派发 code reviewer 子代理之前** 插入前端验证。不改流程顺序与 `code-reviewer.md`。何时做前端审查由 Superpowers 流程判定，本规则只规定该插入点上的动作。
+
+## 接入点
+
+```
+1. Get git SHAs（BASE / HEAD）
+   【本规则】浏览器验证
+2. Dispatch code reviewer（code-reviewer.md）
+3. Act on feedback
+```
+
+## 验证
+
+**浏览器优先级**（`priority-resolution`）：
+
+1. **首选**：IDE 内置浏览器 — 须调用 **`cursor-ide-browser`**（`browser_navigate`、`browser_snapshot`、`browser_take_screenshot` 等）
+2. **降级**：仅当内置浏览器 **确实无法使用**（如 MCP 未启用、调用失败、环境阻塞且已尝试恢复）时，才可用系统/外部浏览器；须在同次审查记录中说明降级原因
+3. **禁止**：用 curl / wget / 仅读 HTML 文件代替浏览器验证
+
+先获得 **http(s)://** URL（dev 服务、`preview-html` 或 Companion）；禁止 `file://`。
+
+| 类型 | 动作 |
+|------|------|
+| **交互** | `browser_navigate` → `browser_lock` → 按设计/计划走关键路径（click、fill 等）；页面结构变化后重新 `browser_snapshot` → `unlock` |
+| **页面** | 每页 `browser_navigate` + **`browser_take_screenshot`**，确认无空白、严重错位或崩态 |
+
+## 记录
+
+验证结果（URL、覆盖范围、截图结论、发现的问题）作为本次审查内容的一部分，审查完成后按 **`doc-project-structure`** 追加 `review.md`，格式见 **`doc-file-definition-review`**。
