@@ -22,7 +22,7 @@ my_harness/
     │   ├── doc-project-structure.mdc   软件开发项目的文档架构
     │   ├── brainstorming-visual-enhancement.mdc  可视化增强
     │   ├── brainstorming-architecture-thinking-enhancement.mdc  架构思考增强（接入 architecture-design）
-    │   ├── using-subagent-enhancement.mdc  Subagent 使用增强（默认尽可能派发）
+    │   ├── using-subagent-enhancement.mdc  Subagent 使用增强（默认 Subagent-Driven 派发）
     │   └── lesson-capture.mdc          经验捕获与技能提炼
     ├── skills/                         20 个技能目录
     │   ├── doc-file-definition-requirement/
@@ -57,14 +57,13 @@ my_harness/
     │   └── preview-html/                本地 HTML HTTP 预览（daemon、多 root、Cursor 内置浏览器）
     │       ├── SKILL.md
     │       └── scripts/demo-preview-server.cjs
-    └── commands/                       25 个命令
+    └── commands/                       24 个命令
         ├── design.md                   /design
         ├── plan.md                     /plan
         ├── implement.md                /implement
         ├── review.md                   /review
         ├── debug.md                    /debug
         ├── accept.md                   /accept
-        ├── refuse.md                   /refuse
         ├── lesson-record.md            /lesson-record
         ├── docs-project-check.md       /docs-project-check
         ├── docs-regulation-show.md     /docs-regulation-show
@@ -151,7 +150,6 @@ my_harness/
 | `/review` | 审查代码 |
 | `/debug [问题]` | 系统化调试 |
 | `/accept` | 验收合入 |
-| `/refuse [内容]` | 拒绝变更并记录 |
 
 ### 经验捕获
 | 命令 | 说明 |
@@ -202,7 +200,7 @@ my_harness/
 ```
 /design → /plan → /implement → /review → /accept
   │                    │            │
-  └─ 可视化确认        └─ /refuse   └─ /debug（如有问题）
+  └─ 可视化确认                      └─ /debug（如有问题）
 ```
 
 ---

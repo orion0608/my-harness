@@ -1,49 +1,26 @@
 ---
-description: Subagent 使用增强——默认尽可能派发子代理以降低上下文噪点并提升并行效率；满足判定时不再询问是否启动。
+description: Subagent 使用增强——plan 交接后默认 Subagent-Driven，不再询问是否启用 subagent。
 alwaysApply: true
 ---
 
 # Subagent 使用增强
 
-补充 Superpowers 中与 subagent 相关的技能（`subagent-driven-development`、`dispatching-parallel-agents`、`requesting-code-review` 等）：**默认尽可能使用 subagent**，满足判定时**不再** AskQuestion 询问「是否启动 subagent / 子代理」。不改 Superpowers 技能步骤顺序与子代理 prompt 模板。
-
-## 默认策略
-
-**同时满足「适用」且不满足「不适用」→ 直接派发 subagent（Task 工具），一句简短声明即可；禁止 AskQuestion 询问是否使用 subagent。** 目标：降低父会话上下文噪点；独立任务优先并行派发。
-
-## 判定
-
-### 适用
-
-- 实现计划含多数相互独立的任务 → 默认 `subagent-driven-development`
-- 2+ 独立问题域（不同测试文件、子系统、并行调查）→ `dispatching-parallel-agents`
-- 广域代码库探索（多目录 / 多命名约定）→ `explore` 类 subagent
-- 代码审查、spec / quality 复核 → 按 Superpowers 模板派发 reviewer subagent
-- 单项任务上下文量大，或父会话已积累大量与任务无关的历史
-
-### 不适用
-
-- 任务强耦合，必须在同一会话内连续共享状态
-- 极简单步（父代理数轮内可完成且无上下文污染）
-- 多个 subagent 会争用同一 mutable 资源且无法隔离
-- 用户在本会话中**已明确**要求 inline / 同会话执行
+补充 Superpowers **`writing-plans`** 的 Execution Handoff：有实现计划且进入执行时，**默认** Subagent-Driven，**不再** AskQuestion「是否使用 subagent / 子代理」。不改 Superpowers 技能步骤顺序与子代理 prompt 模板。
 
 ## 接入点
 
-凡 Superpowers 流程中**即将派发 subagent 之前**（广域探索、并行修复、计划执行、审查派发等）：按上节判定 → 适用则直接 Task。
-
-### writing-plans → Execution Handoff
+**`writing-plans` → Execution Handoff**（原步骤 *Which approach?* 之前）：
 
 ```
-Plan 保存完成
-  【本规则】独立任务占多数 → 声明「默认 Subagent-Driven」→ 读取 subagent-driven-development 并开始派发
-  否则 → 可用 AskQuestion 在 Subagent-Driven / Inline 间选择（仅此场景可询问执行模式）
-原步骤：Which approach?
+Plan 已保存
+  → 声明使用 Subagent-Driven Development
+  → REQUIRED：读取并执行 subagent-driven-development（含其 Red Flags）
+  → 禁止为「是否启用 subagent」再 AskQuestion
 ```
+
+其它流程若出现「是否用 subagent」的确认，且本会话未命中下方例外，同样默认 subagent、禁止重复询问。
 
 ## 边界
 
-- Superpowers 流程顺序与子代理 prompt 模板绝对优先（`priority-resolution`）
-- 本规则仅插入「默认派发、少询问」决策，不跳过 HARD-GATE、不合并步骤
-- 与 subagent 无关的用户-facing 选择（产品方向、破坏性操作授权等）仍须 AskQuestion
-- 子代理 prompt 须含完整任务文本与约束，勿让其继承父会话全文
+- 本规则插件不影响其它superpowers规定的行为
+- 本规则插件仅替用户声明需要强制开启**subagent-driven**，这种声明等同于用户发出的指令，千万重视！

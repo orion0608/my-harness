@@ -85,7 +85,7 @@ project-root/
 │       ├── design.md           必写 — 设计文档
 │       ├── plan.md             必写 — 实现计划
 │       ├── devlog.md           必写 — 开发日志（每次 commit 追加）
-│       ├── accept-log.md       必写 — 变更记录（修改/拒绝/同意）
+│       ├── accept-log.md       必写 — 计划偏离记录（修改/同意）
 │       ├── review.md           选写 — 代码审查记录
 │       ├── test-report.md      选写 — 测试报告
 │       ├── release-notes.md    选写 — 发布说明
@@ -160,7 +160,6 @@ project-root/
 | `/review`      | 对当前分支改动进行代码审查           |
 | `/accept`      | 验收分支工作，执行分支合入合成流程       |
 | `/debug [问题]`  | 对指定问题启动系统化调试            |
-| `/refuse [变更]` | 拒绝某项变更并在 accept-log 中记录 |
 
 
 ##### 文档管理命令

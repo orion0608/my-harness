@@ -152,8 +152,9 @@ docs/*/
 
 **触发事件**：
 - 计划中的某项被**修改**（与原计划不同）
-- 计划中的某项被**拒绝/跳过**（决定不做）
 - 计划外的变更被**同意**（新增需求或调整）
+
+（原计划某项不做或需求作废：删除功能分支，不记 accept-log。）
 
 ### review.md（选写）
 
@@ -186,7 +187,7 @@ docs/*/
 | `README.md` | 项目初始化 | 功能/范围/技术栈/架构重大变更时 |
 | `CHANGELOG.md` | 项目初始化 | 每次分支合并/发布时追加 |
 | `version.md` | 项目初始化 | 版本号变更时 |
-| `docs/ARCHITECTURE.md` | 首个非平凡模块出现时 | 架构变更时 |
+| `docs/ARCHITECTURE.md` | 首个非平凡模块出现时 | 架构变更时；项目级 UI 规范变更时（§8） |
 | `docs/API.md` | 首个 API 端点出现时 | API 变更时 |
 | `docs/DATABASE.md` | 首张数据表出现时 | 数据库 Schema 变更时 |
 
@@ -200,12 +201,13 @@ docs/*/
 | 头脑风暴完成、设计定稿 | `docs/<branch>/design.md` + `docs/superpowers/specs/` 对应文件 |
 | 实现计划定稿 | `docs/<branch>/plan.md` + `docs/superpowers/plans/` 对应文件 |
 | 每次 git commit | `docs/<branch>/devlog.md` 追加一条 |
-| 计划修改、拒绝或计划外变更被同意 | `docs/<branch>/accept-log.md` 追加一条 |
+| 计划修改或计划外变更被同意 | `docs/<branch>/accept-log.md` 追加一条 |
 | 代码审查完成 | `docs/<branch>/review.md` 追加一条 |
 | 测试执行完成 | `docs/<branch>/test-report.md` |
 | 发现 Bug 或技术债 | `docs/<branch>/issues.md` 追加一条 |
 | 分支合并/发布 | `docs/<branch>/release-notes.md` → 提取摘要到 `CHANGELOG.md` |
 | 新增模块或架构变更 | `docs/ARCHITECTURE.md` + `README.md` |
+| 首次确立或变更项目级 UI 风格（美学模式、参考 slug、UI 实现方式） | `docs/ARCHITECTURE.md` §8（过程记录在 `docs/<branch>/design.md`「前端设计」） |
 | 新增/修改 API | `docs/API.md` |
 | 数据库 Schema 变更 | `docs/DATABASE.md` |
 | 版本号变更 | `version.md` |
@@ -219,7 +221,7 @@ docs/*/
 
 1. 读取 `docs/<branch-id>/` 下所有过程文档
 2. 从 `release-notes.md` 提取摘要，追加到 `CHANGELOG.md`
-3. 根据决策矩阵，将增量信息合并到 `docs/ARCHITECTURE.md`、`docs/API.md`、`docs/DATABASE.md`
+3. 根据决策矩阵，将增量合并到 `docs/ARCHITECTURE.md`（含 `design.md`「架构设计」与「前端设计」→ §8，见 `doc-file-definition-architecture` 映射表）、`docs/API.md`、`docs/DATABASE.md`
 4. 如有版本号变更，更新 `version.md`
 5. 如有项目范围/技术栈变更，更新 `README.md`
 6. 分支过程文档（`docs/<branch-id>/`）不合并到主分支，随 feature 分支清理

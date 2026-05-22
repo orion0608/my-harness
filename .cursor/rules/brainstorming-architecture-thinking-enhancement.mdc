@@ -58,7 +58,7 @@ Superpowers brainstorming 原生流程：
 
 > 本次涉及架构决策，将按 `architecture-design` 技能展开技术架构维度的设计；不替代 brainstorming 的需求澄清与设计审批流程。
 
-0-1 追加：
+0-1 追加（关键约束项）：
 
 > 0-1：将按 `tech-stack-guidance` 请您选定系统级别并写入 requirement。
 

@@ -1,6 +1,6 @@
 ---
 name: doc-file-definition-accept-log
-description: 定义 accept-log.md（变更/拒绝/同意记录）的编写格式和内容要求。当 doc-project-structure 规则触发 accept-log.md 追加时使用。
+description: 定义 accept-log.md（计划偏离记录：修改/同意）的编写格式和内容要求。当 doc-project-structure 规则触发 accept-log.md 追加时使用。
 disable-model-invocation: true
 ---
 
@@ -10,8 +10,9 @@ disable-model-invocation: true
 
 实现过程中发生以下事件时追加一条记录：
 - 计划中的某项被**修改**（与原计划不同）
-- 计划中的某项被**拒绝/跳过**（决定不做）
 - 计划外的变更被**同意**（新增需求或调整）
+
+> 原计划某项不再做、或整项需求作废：删除功能分支即可，**不**写入本日志。
 
 文件在首次事件发生时创建。
 
@@ -30,10 +31,10 @@ disable-model-invocation: true
 
 ## YYYY-MM-DD HH:MM
 
-**事件类型：** <!-- 修改 / 拒绝 / 同意 -->
+**事件类型：** <!-- 修改 / 同意 -->
 
 **涉及内容：**
-<!-- 描述被修改/拒绝/同意的具体内容 -->
+<!-- 描述被修改或同意的具体内容 -->
 
 **原因：**
 <!-- 说明为什么做出这个决定 -->
@@ -52,7 +53,6 @@ disable-model-invocation: true
 ### 事件类型
 
 - **修改**：原计划有调整，但方向不变
-- **拒绝**：原计划中的某项决定不做
 - **同意**：计划外的新增内容被接受
 
 ### 涉及内容
