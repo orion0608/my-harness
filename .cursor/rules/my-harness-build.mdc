@@ -25,6 +25,7 @@ Harness 是对 **Superpowers 插件体系** 的增强层，通过在项目级别
 | 每个文档的格式、模板、内容要求 | `doc-file-definition-*` 技能 | `.cursor/skills/` |
 | 前端设计（style+frame 路由、参考索引、ui-frame 子技能） | `frontend-design` 技能 | `.cursor/skills/frontend-design/` |
 | 技术架构设计（0-1 初建 / 1-N 迭代判断 / 模块、依赖、契约、错误、测试、迁移） | `architecture-design` 技能 | `.cursor/skills/architecture-design/` |
+| 组织技术栈与系统开发模式（工具级/平台级约束） | `tech-stack-guidance` 技能 | `.cursor/skills/tech-stack-guidance/` |
 | 架构思考接入 Superpowers brainstorming 的方式 | `brainstorming-architecture-thinking-enhancement` 规则 | `.cursor/rules/` |
 | Superpowers 流程插件（方法论；命名 `*-enhancement`） | 本节 **§6**；各插件的插入点与动作见对应 `*-enhancement` 规则 | `.cursor/rules/` |
 | 本地 HTML HTTP 预览与内置浏览器打开 | `preview-html` 技能 | `.cursor/skills/preview-html/` |

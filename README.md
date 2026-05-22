@@ -24,7 +24,7 @@ my_harness/
     │   ├── brainstorming-architecture-thinking-enhancement.mdc  架构思考增强（接入 architecture-design）
     │   ├── using-subagent-enhancement.mdc  Subagent 使用增强（默认尽可能派发）
     │   └── lesson-capture.mdc          经验捕获与技能提炼
-    ├── skills/                         19 个技能目录
+    ├── skills/                         20 个技能目录
     │   ├── doc-file-definition-requirement/
     │   ├── doc-file-definition-design/   # design.md 含「前端设计」节（UI 必填）
     │   ├── doc-file-definition-plan/
@@ -48,6 +48,7 @@ my_harness/
     │   │   ├── workflow-greenfield.md   0-1 初建完整工作流
     │   │   ├── workflow-iteration.md    1-N 迭代工作流（含 14 项调整判断）
     │   │   └── reference.md             架构要素参考 + 设计文档模板 + 检查清单
+    │   ├── tech-stack-guidance/         组织技术栈与系统开发模式（工具级/平台级）
     │   ├── frontend-design/             前端 style+frame 路由（单技能）
     │   │   ├── SKILL.md                 模式路由、参考索引、子技能表
     │   │   ├── free-style/              开放式美学子技能（无 ui-frame 库时）

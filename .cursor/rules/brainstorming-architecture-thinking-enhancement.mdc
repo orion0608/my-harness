@@ -38,6 +38,7 @@ Agent 进入本规则前，必须认知以下分工，避免重复或冲突。
 | 迁移与回滚策略（小步迁移、先补测试） | `workflow-iteration.md` 分流 B/C |
 | 反过度设计原则与扩展点纪律 | SKILL.md 基本原则 5 |
 | 候选方案的结构化对比与显式取舍 | `workflow-greenfield.md` 步骤 3 |
+| 0-1 系统级别选定与栈约束 | `tech-stack-guidance` |
 
 ---
 
@@ -74,7 +75,14 @@ Superpowers brainstorming 原生流程：
   ─────────────────────────────────────
   【本规则接入点】判定是否触发架构决策（按第二节）
     ├─ 触发 → 读 `architecture-design` SKILL.md
-    │         → 按 0-1 / 1-N 路由完成对应工作流
+    │         → 按 0-1 / 1-N 路由
+    │         ├─ 0-1 → Read `tech-stack-guidance`
+    │         │        → AskQuestion：用户选 工具级 | 平台级
+    │         │        → 写入 requirement.md §1（用户原话/选项）
+    │         │        → workflow-greenfield
+    │         └─ 1-N → 不重选级别
+    │                  → 从 README / ARCHITECTURE 读取已锁定级别并校验
+    │                  → workflow-iteration
     │         → 按第四节交付产物
     │         → 作为「架构设计」节内容并入 Present design
     └─ 不触发 → 一句话说明理由，跳过本规则
@@ -89,6 +97,10 @@ Superpowers brainstorming 原生流程：
 接入时 Agent **必须显式告知用户**（不得静默接入）：
 
 > "本次涉及架构决策，将按 `architecture-design` 技能展开技术架构维度的设计；不替代 brainstorming 的需求澄清与设计审批流程。"
+
+0-1 追加一句：
+
+> "0-1：将按 `tech-stack-guidance` 请您选定系统级别并写入 requirement。"
 
 ---
 
@@ -143,6 +155,8 @@ Superpowers brainstorming 原生流程：
 - [ ] 已按第二节判定是否触发架构决策
 - [ ] 触发：已显式告知用户接入 `architecture-design`
 - [ ] 触发：已读取 `architecture-design/SKILL.md` 并选择 0-1 或 1-N 路由
+- [ ] 0-1：已 Read `tech-stack-guidance`，requirement §1 有级别记录
+- [ ] 1-N：未重选级别
 - [ ] 0-1：已完成 `workflow-greenfield.md` 的 10 个步骤
 - [ ] 1-N：已完成 14 项调整判断 + 唯一结论（A / B / C）
 - [ ] 1-N 分流 B / C：已写出迁移步骤与回滚策略
@@ -163,7 +177,16 @@ Agent 在 Superpowers brainstorming "Present design" 之前进行架构判断时
 触发：
 1. 显式告知用户：本次涉及架构决策，将接入 architecture-design 技能
 2. 读取 architecture-design/SKILL.md
-3. 按 0-1 或 1-N 路由完成对应工作流（workflow-greenfield / workflow-iteration）
+3. 0-1 / 1-N 路由：
+   0-1：
+     Read tech-stack-guidance
+     → AskQuestion：用户选 工具级 | 平台级
+     → 写入 requirement.md §1（用户原话/选项）
+     → workflow-greenfield
+   1-N：
+     从 README / ARCHITECTURE 读已锁定级别并校验
+     → 不 AskQuestion
+     → workflow-iteration
 4. 按本规则第四节交付产物
 5. 将产物作为 "Present design" 阶段「架构设计」节的内容呈现，等待用户审批
 
