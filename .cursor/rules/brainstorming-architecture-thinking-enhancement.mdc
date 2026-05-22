@@ -1,70 +1,17 @@
 ---
-description: 头脑风暴架构思考增强规则——在设计呈现阶段强制加载 architecture-design 技能，补足 Superpowers brainstorming 在场景判断、模块边界、依赖方向、契约、错误模型、测试架构、迁移策略等技术架构维度的不足。
+description: 头脑风暴架构思考增强——在 brainstorming Step 4↔5 判定架构决策时强制加载 architecture-design 技能，补足模块边界、契约、错误模型、测试架构、迁移策略等维度。
 alwaysApply: true
 ---
 
 # 头脑风暴架构思考增强
 
-本规则将 `architecture-design` 技能作为插件接入 Superpowers `brainstorming` 流程的 **"Present design"** 节点，补强**技术架构维度**。
-
-不修改 Superpowers 流程顺序、不替代用户审批；仅在触发架构决策时强制加载技能、规定必须回答的问题与必须产出的内容。
+本规则在 Superpowers brainstorming **Step 4（Propose 2-3 approaches）与 Step 5（Present design）之间**插入架构门禁：判定是否涉及架构决策，命中则读 `architecture-design` 并按其 workflow 产出「架构设计」节内容。不修改 Superpowers 步骤顺序、不替代用户审批。架构维度正文以 `architecture-design` 技能为信源，本规则不重复其 workflow 步骤。
 
 ---
 
-## 一、Superpowers brainstorming 的架构覆盖与缺口
+## 一、接入点与路由
 
-Agent 进入本规则前，必须认知以下分工，避免重复或冲突。
-
-### Superpowers 已覆盖
-
-- 架构维度的话题提示：architecture / components / data flow / error handling / testing
-- 单元解耦原则：清晰边界、定义良好的接口、可独立理解与测试
-- 既有项目的探索与模式遵循
-- 多子系统的拆分提议（spec 过大时建议分解）
-- 设计的逐节呈现与用户每节确认
-
-### Superpowers 缺口（本规则强制补强）
-
-| 缺口 | 由 `architecture-design` 补强的位置 |
-|---|---|
-| 0-1 与 1-N 场景的明确区分 | SKILL.md 触发条件 + 路由 |
-| 1-N 是否调整架构的判断流程 | `workflow-iteration.md` 14 项调整判断清单 + 三分流（不调整 / 局部 / 系统级） |
-| 显式的模块边界、公开契约、依赖方向 | `reference.md`「模块设计」「分层与依赖」 |
-| 业务规则集中（Domain 层）原则 | SKILL.md 基本原则 4 |
-| 错误模型的 5 类分类 | `reference.md`「错误处理」 |
-| 接口契约（幂等 / 版本 / 错误语义） | `reference.md`「接口契约」 |
-| 数据访问 / 事务边界 / 跨模块查询禁令 | `reference.md`「数据访问」 |
-| 测试架构（单元 / 集成 / E2E 分工 + mock 策略） | `reference.md`「测试架构」 |
-| 迁移与回滚策略（小步迁移、先补测试） | `workflow-iteration.md` 分流 B/C |
-| 反过度设计原则与扩展点纪律 | SKILL.md 基本原则 5 |
-| 候选方案的结构化对比与显式取舍 | `workflow-greenfield.md` 步骤 3 |
-| 0-1 系统级别选定与栈约束 | `tech-stack-guidance` |
-
----
-
-## 二、触发条件
-
-当 brainstorming 涉及以下任一情况，本规则进入接入流程：
-
-- 新建系统 / 新建子系统
-- 新增 / 删除 / 重命名模块
-- 调整层与层之间的依赖方向
-- 新增 / 修改公开 API 或事件契约
-- 改变核心数据模型或表结构
-- 引入新的外部依赖（DB / MQ / 第三方 SDK / AI 模型供应商）
-- 跨模块的代码迁移或重构
-- "是否要重构 / 拆服务 / 分层"的提问
-- 同一类业务规则散落，开始讨论收敛
-
-**与 `brainstorming-visual-enhancement` 关系**：触发条件可叠加。前端场景（UI）按 visual-enhancement 完成方向预览；该变更若同时触及上述任一项，仍须按本规则接入 `architecture-design`。两个增强各自负责一个维度（视觉 / 架构），不互相替代。
-
-**不触发示例**：纯文案改动、纯样式微调（不变更组件结构）、本地化、配置项调整（不变更配置来源）、文档修订。
-
----
-
-## 三、接入点
-
-### 流程图
+**判定与门禁仅在 Step 4 完成之后、Step 5 开始呈现任何设计节之前执行**；未命中 [架构决策判定](#架构决策判定) 则一句话说明理由后跳过，直接进入 Step 5。
 
 ```
 Superpowers brainstorming 原生流程：
@@ -73,40 +20,63 @@ Superpowers brainstorming 原生流程：
   Step 3 Ask clarifying questions
   Step 4 Propose 2-3 approaches
   ─────────────────────────────────────
-  【本规则接入点】判定是否触发架构决策（按第二节）
-    ├─ 触发 → 读 `architecture-design` SKILL.md
-    │         → 按 0-1 / 1-N 路由
-    │         ├─ 0-1 → Read `tech-stack-guidance`
-    │         │        → AskQuestion：用户选 工具级 | 平台级
-    │         │        → 写入 requirement.md §1（用户原话/选项）
-    │         │        → workflow-greenfield
-    │         └─ 1-N → 不重选级别
-    │                  → 从 README / ARCHITECTURE 读取已锁定级别并校验
-    │                  → workflow-iteration
-    │         → 按第四节交付产物
-    │         → 作为「架构设计」节内容并入 Present design
-    └─ 不触发 → 一句话说明理由，跳过本规则
+  【本规则接入点】
+    1. 架构决策判定（见下节）
+    2. 命中 → 读 `architecture-design` SKILL.md
+       → 0-1 / 1-N 路由（见下「命中后动作」）
+       → 按第二节交付产物
+       → 作为「架构设计」节并入 Step 5
+    3. 未命中 → 跳过
+  ─────────────────────────────────────
+  【与 brainstorming-visual-enhancement 并行】
+    两插件均在 Step 4 与 Step 5 之间执行；视觉与架构各自完成后再 Step 5
   ─────────────────────────────────────
   Step 5 Present design
   Step 6 Write design doc
   Step 7-9 Spec self-review / User review / writing-plans
 ```
 
-### Agent 必须的提示语
+### 架构决策判定
 
-接入时 Agent **必须显式告知用户**（不得静默接入）：
+当 brainstorming 涉及以下**任一**情况，本插件命中：
 
-> "本次涉及架构决策，将按 `architecture-design` 技能展开技术架构维度的设计；不替代 brainstorming 的需求澄清与设计审批流程。"
+- 新建系统 / 新建子系统
+- 新增 / 删除 / 重命名模块
+- 调整层与层之间的依赖方向
+- 新增 / 修改公开 API 或事件契约
+- 改变核心数据模型或表结构
+- 引入新的外部依赖（DB / MQ / 第三方 SDK / AI 模型供应商）
+- 跨模块的代码迁移或重构
+- 「是否要重构 / 拆服务 / 分层」的提问
+- 同一类业务规则散落，开始讨论收敛
 
-0-1 追加一句：
+**与 `brainstorming-visual-enhancement`**：判定可叠加。UI 场景按 visual 规则完成方向预览；若同时触及上述任一项，仍须本规则接入 `architecture-design`。两插件各负责视觉 / 架构，不互相替代。
 
-> "0-1：将按 `tech-stack-guidance` 请您选定系统级别并写入 requirement。"
+**不命中示例**：纯文案改动、纯样式微调（不变更组件结构）、本地化、配置项调整（不变更配置来源）、文档修订。
+
+### Agent 提示语（命中时须显式告知，不得静默接入）
+
+> 本次涉及架构决策，将按 `architecture-design` 技能展开技术架构维度的设计；不替代 brainstorming 的需求澄清与设计审批流程。
+
+0-1 追加：
+
+> 0-1：将按 `tech-stack-guidance` 请您选定系统级别并写入 requirement。
+
+### 命中后动作
+
+1. Read `architecture-design` SKILL.md
+2. **0-1**：Read `tech-stack-guidance` → AskQuestion（工具级 | 平台级）→ 写入 requirement.md §1 → `workflow-greenfield`
+3. **1-N**：从 README / ARCHITECTURE 读已锁定级别并校验 → 不重选级别 → `workflow-iteration`
+4. 按 [第二节](#二强制产出) 交付产物，并入 Step 5「架构设计」节，等待用户逐节审批
+5. Step 6 落盘见 `doc-project-structure`
+
+**冲突裁决**：与 Superpowers / `doc-project-structure` 冲突时按 `priority-resolution`；本规则只插入产出要求，不跳过、合并或重排 Superpowers 步骤。
 
 ---
 
-## 四、强制产出
+## 二、强制产出
 
-接入后必须输出以下内容（写入 brainstorming spec 与项目分支设计文档的「架构设计」节内部；具体写入位置由项目文档规则决定）：
+接入后须写入 brainstorming spec 与 `docs/<branch>/design.md`「架构设计」节（外层格式见 `doc-file-definition-design`）：
 
 | 产物 | 0-1 必填 | 1-N 必填 | 由哪一文件指导 |
 |---|:---:|:---:|---|
@@ -123,73 +93,12 @@ Superpowers brainstorming 原生流程：
 | 迁移步骤 + 回滚策略 | ⬜ | ✅（分流 B/C） | `workflow-iteration.md` |
 | 风险与取舍 + 验收标准 | ✅ | ✅ | `reference.md` |
 
-> △ 含义：1-N "不调整" 结论时，仅需描述现有结构如何承载即可；"局部" 或 "系统级" 结论时必填。
+> △：1-N「不调整」时仅需描述现有结构如何承载；「局部」或「系统级」时必填。
 
 ---
 
-## 五、与 Superpowers brainstorming 的协作边界
+## 三、终态门禁（宣称「设计已呈现」前）
 
-| Superpowers `brainstorming` 负责 | 本规则 + `architecture-design` 负责 |
-|---|---|
-| 用户意图与需求澄清 | 架构维度的设计内容 |
-| 多子系统的拆分提议 | 拆分后单子项目内部的架构 |
-| 设计的整体呈现与每节确认 | 「架构设计」节内部的内容规范与产出 |
-| 用户审批（每节后确认） | 不替代审批；产物供其审阅 |
-| Spec 的整体写入流程 | 仅填充「架构设计」节内部 |
-| 与 `writing-plans` 的衔接 | 不修改衔接顺序 |
-
-**严格不冲突**：本规则只补强"架构维度的产出内容"，不修改 brainstorming 的 9 步 checklist、不替代用户审批、不阻断与 `writing-plans` 的过渡。
-
----
-
-## 六、与既有规则的冲突裁决
-
-- 与 Superpowers 冲突 → 按 `priority-resolution` 第一级，Superpowers 流程绝对优先；本规则只在不破坏其顺序的前提下插入产出要求。
-- 与 `doc-project-structure` 冲突 → 按 `priority-resolution` 第二级，文档维护规则绝对优先；本规则只规定"架构内容"，不规定"文档放在哪里"。
-- 与 `brainstorming-visual-enhancement` 并列生效 → 视觉与架构两维度各自完成产出，触发条件叠加时两者同时执行。
-
----
-
-## 七、自检（宣称"设计已呈现"前必查）
-
-- [ ] 已按第二节判定是否触发架构决策
-- [ ] 触发：已显式告知用户接入 `architecture-design`
-- [ ] 触发：已读取 `architecture-design/SKILL.md` 并选择 0-1 或 1-N 路由
-- [ ] 0-1：已 Read `tech-stack-guidance`，requirement §1 有级别记录
-- [ ] 1-N：未重选级别
-- [ ] 0-1：已完成 `workflow-greenfield.md` 的 10 个步骤
-- [ ] 1-N：已完成 14 项调整判断 + 唯一结论（A / B / C）
-- [ ] 1-N 分流 B / C：已写出迁移步骤与回滚策略
-- [ ] 已按第四节表格交付对应产物，并并入 Present design 的「架构设计」节
-- [ ] 未触发：已用一句话说明理由（例如"本次仅文案修改，不涉及架构维度"）
-- [ ] 未替代用户审批；用户已批准"架构设计"节内容
-- [ ] 与同场景下的 `brainstorming-visual-enhancement` 产出并行完成（如适用），未互相覆盖
-
----
-
-## 八、Agent 接入提示词模板
-
-Agent 在 Superpowers brainstorming "Present design" 之前进行架构判断时使用：
-
-```text
-判断本次 brainstorming 是否触发架构决策（按 brainstorming-architecture-thinking-enhancement 规则第二节）。
-
-触发：
-1. 显式告知用户：本次涉及架构决策，将接入 architecture-design 技能
-2. 读取 architecture-design/SKILL.md
-3. 0-1 / 1-N 路由：
-   0-1：
-     Read tech-stack-guidance
-     → AskQuestion：用户选 工具级 | 平台级
-     → 写入 requirement.md §1（用户原话/选项）
-     → workflow-greenfield
-   1-N：
-     从 README / ARCHITECTURE 读已锁定级别并校验
-     → 不 AskQuestion
-     → workflow-iteration
-4. 按本规则第四节交付产物
-5. 将产物作为 "Present design" 阶段「架构设计」节的内容呈现，等待用户审批
-
-不触发：
-一句话说明理由（例：本次仅文案修改 / 仅样式微调，不涉及模块、依赖、契约、数据模型、外部依赖变更），跳过本规则。
-```
+- [ ] 已按 [架构决策判定](#架构决策判定) 完成命中/跳过（跳过须有一句话理由）
+- [ ] 命中：已告知用户、已 Read `architecture-design` 并完成 0-1 或 1-N 路由与对应 workflow
+- [ ] 命中：已按第二节交付产物；用户已批准「架构设计」节；与 visual 插件产出（若适用）未互相覆盖
