@@ -17,6 +17,16 @@ allowed-tools:
 
 > 位于 `ui-frame/antd/`；由 `frontend-design` 在约束式时加载。参考式美学由 `frontend-design` 读 `ui-style/<slug>/DESIGN.md`。
 
+## 适用技术栈
+
+依据 [antd 介绍](https://ant.design/docs/react/introduce-cn)：
+
+- **框架**：React + Web DOM
+- **场景**：中后台、桌面 Web；SSR；Electron
+- **浏览器**：现代浏览器（Edge/Firefox/Chrome/Safari/Opera，最近 2 版）
+- **React 版本**：v4/v5 — React 16+；v6 — React 18+
+- **工具链**：TypeScript；npm/pnpm/yarn/bun；ESM 按需加载
+
 You have access to `@ant-design/cli` — a local CLI tool with bundled antd metadata for v4/v5/v6 (plus migration guides for v3 → v4, v4 → v5, v5 → v6). Use it to query component knowledge, analyze projects, and guide migrations. All data is offline, no network needed.
 
 ## Setup

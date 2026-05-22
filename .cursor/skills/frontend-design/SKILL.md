@@ -31,7 +31,7 @@ HTML 预览 → **`preview-html`**。
 ```
 读 design.md「前端设计」或用户明示
 → 参考式 → 确认 slug（见下索引）→ Read ui-style/<slug>/DESIGN.md
-→ 约束式 / 项目已有库 → 加载 ui-frame 子技能（如 antd）
+→ 约束式 / 项目已有库 → 核验栈兼容（见下「ui-frame 与技术栈兼容性」）→ 加载 ui-frame 子技能（如 antd）
 → 开放式且无库 → **Read** free-style 子技能
 → 否则 → 纯 HTML/CSS/JS
 ```
@@ -60,6 +60,18 @@ HTML 预览 → **`preview-html`**。
 | `antd` | `ui-frame/antd/` |
 
 新增库：`ui-frame/<名>/SKILL.md` + 上表 + README。
+
+#### ui-frame 与技术栈兼容性（必选检查）
+
+加载任一 `ui-frame` 子技能前，**须确认该组件库支持当前项目的前端技术栈**（框架、运行时、构建目标）。不兼容时**不得**加载对应子技能；改选与栈匹配的库，或由调用方确认后回退 `free-style` / 纯 HTML。
+
+依据（按优先级）：`design.md`「前端设计」已记录的栈 > 项目 lockfile / 配置文件 > 源码中的框架 import 与目录结构。
+
+| 库 | 支持的技术栈 |
+|----|-------------|
+| `antd` | React + Web DOM；SSR/Electron；现代浏览器；TypeScript；npm/pnpm/yarn/bun；v6 需 React 18+ |
+
+新增 `ui-frame` 子技能时，须在子技能 `SKILL.md` 或上表中写明**支持的技术栈**，避免 Agent 在错误栈上套用组件库。
 
 ## 参考索引（slug）
 
