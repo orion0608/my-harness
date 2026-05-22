@@ -57,7 +57,7 @@ my_harness/
     │   └── preview-html/                本地 HTML HTTP 预览（daemon、多 root、Cursor 内置浏览器）
     │       ├── SKILL.md
     │       └── scripts/demo-preview-server.cjs
-    └── commands/                       24 个命令
+    └── commands/                       25 个命令
         ├── design.md                   /design
         ├── plan.md                     /plan
         ├── implement.md                /implement
@@ -65,6 +65,7 @@ my_harness/
         ├── debug.md                    /debug
         ├── accept.md                   /accept
         ├── refuse.md                   /refuse
+        ├── lesson-record.md            /lesson-record
         ├── docs-project-check.md       /docs-project-check
         ├── docs-regulation-show.md     /docs-regulation-show
         ├── run.md                      /run
@@ -151,6 +152,11 @@ my_harness/
 | `/debug [问题]` | 系统化调试 |
 | `/accept` | 验收合入 |
 | `/refuse [内容]` | 拒绝变更并记录 |
+
+### 经验捕获
+| 命令 | 说明 |
+|------|------|
+| `/lesson-record [问题]` | 记录有意义问题到经验捕获清单，累计达阈值自动提炼为技能 |
 
 ### 文档管理
 | 命令 | 说明 |
