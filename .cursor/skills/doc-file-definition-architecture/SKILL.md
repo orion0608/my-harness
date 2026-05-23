@@ -87,7 +87,7 @@ sequenceDiagram
 
 <!--
 选填节。仅当存在运行时拓扑决策（多实例、主从、读写分离、消息队列、CDN、外部依赖部署形态等）时填写。
-若 architecture-design 与 Superpowers spec 均未产出部署形态决策，可保留本节标题并写「暂未引入运行时拓扑决策」，或直接整节删除。
+若分支 `design.md`「架构设计」与 Superpowers spec 均未产出部署形态决策，可保留本节标题并写「暂未引入运行时拓扑决策」，或直接整节删除。
 -->
 <!-- 运行时的拓扑结构 -->
 
@@ -169,17 +169,17 @@ graph LR
 
 ## 章节增量来源映射
 
-本文档为**全局快照**，章节内容增量来源由下表规定。/accept 合入时按本表回流字段。
+本文档为**全局快照**，章节内容增量来源由下表规定。分支验收合入主分支时，按本表回流字段。
 
 | 本文档章节 | 必填 | 增量主要来源 | 备注 |
 |---|:---:|---|---|
-| 1. 架构概览 | ✅ | `architecture-design` 模块设计 + 分层（design.md）或 Superpowers spec 的 architecture 段 | 风格用标准术语 |
-| 2. 技术栈 | ✅ | `architecture-design` 约束章节（语言/框架/数据库） | "选型理由"若未产出，可写"沿用项目约束" |
-| 3. 模块地图 | ✅ | `architecture-design` 模块设计 / Superpowers spec components | 必须覆盖所有一级模块 |
-| 4. 数据流 | ✅ | `architecture-design` 数据设计 / Superpowers spec data flow | 每个核心流程一张时序图 |
-| 5. 接口边界 | ✅ | `architecture-design` 接口契约 | 跨进程通信协议如未决定可暂列"待定" |
-| 6. 部署架构 | ⬜ | 仅当存在运行时拓扑决策 | architecture-design 与 Superpowers spec 均不强制产出 |
-| 7. 关键决策记录 | ✅ | `architecture-design` 推荐方案与取舍 / 迁移策略 / Superpowers spec 关键决策 | 只记录有争议或长期影响的决策 |
+| 1. 架构概览 | ✅ | `docs/<branch>/design.md`「架构设计」中的模块划分与分层，或 Superpowers spec 的 architecture 段 | 风格用标准术语 |
+| 2. 技术栈 | ✅ | `design.md`「架构设计」中的技术约束（语言/框架/数据库） | "选型理由"若未产出，可写"沿用项目约束" |
+| 3. 模块地图 | ✅ | `design.md`「架构设计」中的模块清单与职责，或 Superpowers spec components | 必须覆盖所有一级模块 |
+| 4. 数据流 | ✅ | `design.md`「架构设计」中的数据流与时序说明，或 Superpowers spec data flow | 每个核心流程一张时序图 |
+| 5. 接口边界 | ✅ | `design.md`「架构设计」中的接口边界与通信约定 | 跨进程通信协议如未决定可暂列"待定" |
+| 6. 部署架构 | ⬜ | 仅当存在运行时拓扑决策 | `design.md`「架构设计」与 Superpowers spec 均不强制产出 |
+| 7. 关键决策记录 | ✅ | `design.md`「架构设计」中的方案取舍与迁移策略，或 Superpowers spec 关键决策 | 只记录有争议或长期影响的决策 |
 | 8. 前端与 UI 规范 | ⬜ | `docs/<branch>/design.md`「前端设计」 | 有 UI 规范变更时合入覆盖 §8；无变更可保留原 §8 |
 
 ## 更新规则
@@ -197,6 +197,6 @@ graph LR
 ## 与其他文档的关系
 
 - 此文档是**全局快照**，描述项目当前状态
-- 分支 `docs/<branch>/design.md`：「架构设计」→ §1–§7；「前端设计」→ §8；/accept 按映射表回流
+- 分支 `docs/<branch>/design.md`：「架构设计」→ §1–§7；「前端设计」→ §8；验收合入时按映射表回流
 - API 细节在 `docs/API.md`，此文档仅描述接口边界和通信方式
 - 数据库细节在 `docs/DATABASE.md`，此文档仅描述数据层在架构中的位置

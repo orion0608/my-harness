@@ -36,7 +36,7 @@ alwaysApply: true
 ### 分支
 
 - 任何功能开发、Bug 修复、重构、实验性改动等，必须创建对应类型的分支（如 `rp/<name>`、`bug/<name>`）
-- `main`（或 `master`）**仅驻留于主检出**（仓库根目录或项目指定的主 worktree 路径），**仅用于接收**已通过 `/accept` 完整验收流程的合入，保持稳定可发布状态
+- `main`（或 `master`）**仅驻留于主检出**（仓库根目录或项目指定的主 worktree 路径），**仅用于接收**经完整验收合入流程的变更，保持稳定可发布状态
 - 禁止在 `main` 上 `git checkout` 切换到功能分支后继续编码；功能分支代码只能在**该分支绑定的 worktree 目录**中修改
 
 ### worktree 绑定
@@ -44,18 +44,18 @@ alwaysApply: true
 - 创建功能分支时，须**同时**创建并检出对应 worktree（`git worktree add`）；不得仅在主检出内 `git checkout -b` 后开发
 - 每个功能分支在同一仓库内**有且仅有一个**绑定的 worktree 路径；路径命名建议：`.worktrees/<branch-slug>`（若已存在 `.worktrees` 或 `worktrees` 目录则沿用项目既有约定）
 - 判定「当前是否在功能分支的绑定 worktree 中」：`git rev-parse --git-dir` 与 `git rev-parse --git-common-dir` 解析为**不同路径**，且 `git rev-parse --show-superproject-working-tree` 为空（排除子模块误判）
-- 分支删除或 `/accept` 合入完成后，须移除该分支的 worktree（`git worktree remove`），再删除分支引用
+- 分支删除或验收合入完成后，须移除该分支的 worktree（`git worktree remove`），再删除分支引用
 
 ### Agent 门禁
 
-- 执行 `/design`、`/implement`、`/debug` 等开发命令前须检查：
+- 开始设计、实现或调试等工作前须检查：
   1. **非** `main` / `master` 分支；否则引导创建功能分支 + worktree
   2. 当前目录处于该分支的**绑定 worktree**；否则引导 `git worktree add`（或切换到已存在的绑定路径），**不得**仅在主检出内切换分支后继续
-- 具体创建步骤可参考 Superpowers `using-git-worktrees` 技能；本规则规定**必须**绑定，不替代该技能的隔离检测与目录选择流程
+- 创建隔离 worktree 时使用 `git worktree add`（或项目已约定的等效方式）；本规则规定功能分支与 worktree **必须**一一绑定，不替代具体目录选择与检测流程
 
 ### test-project 逻辑工作区
 
-- 验证 `test-project/<name>/` 时，Cursor 工作区根目录仍须为 `my_harness`（见 `my-harness-build`）；功能分支的 worktree 建在**逻辑目标仓库**下（如 `test-project/<name>/.worktrees/<branch-slug>/`）
+- 验证 `test-project/<name>/` 时，Cursor 工作区根目录仍须为 Harness 项目根 `my_harness`（以便加载本项目 `.cursor/` 扩展）；功能分支的 worktree 建在**逻辑目标仓库**下（如 `test-project/<name>/.worktrees/<branch-slug>/`）
 - Agent 对该子项目的 Shell、读写、Git 操作以**绑定 worktree 路径**为 cwd，不得以主检出路径代替
 
 ### 其它
@@ -176,7 +176,7 @@ docs/*/
 
 **创建时机**：涉及前端 UI 改造或业务流程改造时，在计划定稿后、开始编码前创建
 
-**约定**：目录用途与产物类型见 `brainstorming-visual-enhancement` 规则；Demo 仅用于确认理解，是过程产物，不跟踪。
+**约定**：设计阶段 UI/流程确认产生的方向预览与高保真 Demo 写入 `docs/<branch>/demo/`；Demo 仅用于确认理解，是过程产物，不跟踪。
 
 ---
 

@@ -4,6 +4,8 @@
 
 Harness 是对 **Superpowers 插件体系** 的增强层，通过在项目级别叠加 Rules、Skills、Commands、Subagents、Hooks，弥补 Superpowers 在文档管理、触发方式、可视化沟通三个方面的不足。
 
+**三体系分工**（Superpowers 开发流程 / Doc 文档架构 / Commands 触发器）见 `my-harness-build` 规则 §1「三体系架构」。
+
 **核心约束：不改动 Superpowers 任何内容，仅在本项目范围内新增/修改/删除。**
 
 ---

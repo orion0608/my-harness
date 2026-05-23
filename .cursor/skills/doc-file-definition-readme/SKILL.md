@@ -32,7 +32,7 @@ disable-model-invocation: true
 
 | 分类 | 技术 | 版本 | 用途 |
 |------|------|------|------|
-| 系统级别 | 工具级 \| 平台级 | — | 组织开发模式（`tech-stack-guidance`） |
+| 系统级别 | 工具级 \| 平台级 | — | 组织开发模式：**工具级**或**平台级**；首次定级见 `requirement.md` §1，合入后见 `docs/ARCHITECTURE.md` §2 / §7 |
 | 运行时 | Node.js | ≥18 | 服务端运行环境 |
 | 框架 | React | 18.x | 前端 UI |
 | 数据库 | PostgreSQL | 15 | 主存储 |
