@@ -4,7 +4,7 @@
 
 ## Agent 行为
 
-1. 检查当前分支是否已完成 accept 流程（文档完整性、测试通过）
+1. 检查当前分支是否已完成 `/accept`（含 `doc-project-structure` 分支合入合成与 Superpowers finishing）
 2. 如未完成 accept，提示用户先执行 `/accept`
 3. 如已完成，获取主分支名（main 或 master）
 4. 切换到主分支并执行合并

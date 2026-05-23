@@ -45,6 +45,7 @@ alwaysApply: true
 - 每个功能分支在同一仓库内**有且仅有一个**绑定的 worktree 路径；路径命名建议：`.worktrees/<branch-slug>`（若已存在 `.worktrees` 或 `worktrees` 目录则沿用项目既有约定）
 - 判定「当前是否在功能分支的绑定 worktree 中」：`git rev-parse --git-dir` 与 `git rev-parse --git-common-dir` 解析为**不同路径**，且 `git rev-parse --show-superproject-working-tree` 为空（排除子模块误判）
 - 分支删除或验收合入完成后，须移除该分支的 worktree（`git worktree remove`），再删除分支引用
+- **分支过程文档**的创建与更新须在**绑定 worktree**内进行；禁止在 `main` 主检出上为进行中的功能分支维护 `docs/<branch-id>/`
 
 ### Agent 门禁
 
@@ -66,35 +67,61 @@ alwaysApply: true
 
 ---
 
+## 过程文档物理位置
+
+| 术语 | 含义 |
+|------|------|
+| `<branch-id>` | 过程文档目录名，与**完整分支名**一致（如 `rp/admin-header-actions`） |
+| `<branch-slug>` | worktree 目录名，将分支名中的 `/` 换为 `-` 等（如 `rp-admin-header-actions`） |
+| **主检出** | `main` / `master` 所在仓库根目录 |
+| **绑定 worktree** | `.worktrees/<branch-slug>/`（或项目既有约定路径） |
+
+**路径解析（信源）**：本规则与决策矩阵中的 `docs/<branch-id>/`、`docs/<branch>/` 在**功能分支开发期**均指**当前绑定 worktree 根**下的相对路径。其它组件引用上述路径时无需重复定义，以本节为准。
+
+| 角色 | 路径 | 何时写入 | 职责 |
+|------|------|----------|------|
+| **权威副本（开发期）** | `{worktree}/docs/<branch-id>/` | 设计 / 实现 / commit 全流程 | Agent **仅**在此维护过程文档 |
+| **归档备份（合入后）** | `{main}/docs/<branch-id>/` | `/accept` 合入合成时整目录复制 | 主检出只读归档；**禁止**在开发期为进行中分支在此创建或更新 |
+
+`docs/superpowers/` 仍在各 worktree（或主检出）的 `docs/` 下由 Superpowers 写入；合入归档**仅**复制 `docs/<branch-id>/`（含其下 `demo/`），不强制备份 `docs/superpowers/`。
+
+---
+
 ## Part A — 目录布局
 
 ```
-project-root/
-├── README.md                              ✅ 跟踪
-├── CHANGELOG.md                           ✅ 跟踪
-├── version.md                             ✅ 跟踪
+project-root/                                    ← 主检出（main / master）
+├── README.md                                    ✅ 跟踪
+├── CHANGELOG.md                                 ✅ 跟踪
+├── version.md                                   ✅ 跟踪
 ├── .gitignore
 │
 ├── docs/
-│   ├── ARCHITECTURE.md                    ✅ 跟踪
-│   ├── API.md                             ✅ 跟踪（可选）
-│   ├── DATABASE.md                        ✅ 跟踪（可选）
+│   ├── ARCHITECTURE.md                          ✅ 跟踪
+│   ├── API.md                                   ✅ 跟踪（可选）
+│   ├── DATABASE.md                              ✅ 跟踪（可选）
 │   │
-│   ├── superpowers/                       ❌ 不跟踪
-│   │   ├── specs/                         Superpowers 设计文档
-│   │   └── plans/                         Superpowers 实现计划
-│   │
-│   └── <branch-id>/                       ❌ 不跟踪
-│       ├── requirement.md                 必写
-│       ├── design.md                      必写
-│       ├── plan.md                        必写
-│       ├── devlog.md                      必写
-│       ├── accept-log.md                  必写
-│       ├── review.md                      选写
-│       ├── test-report.md                 选写
-│       ├── release-notes.md               选写
-│       ├── issues.md                      选写
-│       └── demo/                          选写
+│   └── <branch-id>/                             ❌ 不跟踪 — 合入后归档备份（只读）
+│       ├── requirement.md … demo/               （结构同下，由合入时从 worktree 复制）
+│
+└── .worktrees/
+    └── <branch-slug>/                           ← 功能分支绑定 worktree
+        └── docs/
+            ├── superpowers/                     ❌ 不跟踪 — Superpowers 产出
+            │   ├── specs/
+            │   └── plans/
+            │
+            └── <branch-id>/                     ❌ 不跟踪 — 开发期权威过程文档
+                ├── requirement.md               必写
+                ├── design.md                    必写
+                ├── plan.md                      必写
+                ├── devlog.md                    必写
+                ├── accept-log.md                必写
+                ├── review.md                    选写
+                ├── test-report.md               选写
+                ├── release-notes.md             选写
+                ├── issues.md                    选写
+                └── demo/                        选写
 ```
 
 ---
@@ -109,7 +136,7 @@ project-root/
 | `docs/ARCHITECTURE.md` | ✅ | 全局架构参考 |
 | `docs/API.md` | ✅ | 全局 API 参考 |
 | `docs/DATABASE.md` | ✅ | 全局数据库参考 |
-| `docs/<branch-id>/**` | ❌ | 分支过程产物，随分支清理 |
+| `docs/<branch-id>/**`（主检出或 worktree 内） | ❌ | 过程文档不进 Git；worktree 侧合入后删除，主检出侧保留磁盘归档 |
 | `docs/superpowers/**` | ❌ | Superpowers 原生产出，由 Superpowers 自行管理 |
 
 ### 必需的 `.gitignore` 条目
@@ -118,11 +145,11 @@ project-root/
 docs/*/
 ```
 
-> `docs/*/` 排除 `docs/` 下所有子目录（分支过程文档 + superpowers），但不影响 `docs/` 根下的一级文件。
+> `docs/*/` 排除 `docs/` 下所有子目录（分支过程文档 + superpowers），但不影响 `docs/` 根下的一级文件。主检出 `docs/<branch-id>/` 归档同样被忽略，**不进入主分支 Git 历史**。
 
 ---
 
-## Part C — 分支过程文档（`docs/<branch-id>/`）
+## Part C — 分支过程文档（开发期：绑定 worktree 内 `docs/<branch-id>/`）
 
 各文档的正文结构、模板与写作要求，见文首映射表中对应的 `doc-file-definition-*` 技能；本节仅规定必写性、创建/触发时机及流程说明。
 
@@ -195,6 +222,8 @@ docs/*/
 
 ## Part E — 决策矩阵
 
+> 表中 `docs/<branch>/` 在功能分支开发期均相对于**绑定 worktree 根**（见「过程文档物理位置」）。
+
 | 发生了什么（业务事件） | 需创建/更新的文档 |
 |-----------------------|-------------------|
 | 需求明确、准备开始设计 | `docs/<branch>/requirement.md` |
@@ -205,7 +234,7 @@ docs/*/
 | 代码审查完成 | `docs/<branch>/review.md` 追加一条 |
 | 测试执行完成 | `docs/<branch>/test-report.md` |
 | 发现 Bug 或技术债 | `docs/<branch>/issues.md` 追加一条 |
-| 分支合并/发布 | `docs/<branch>/release-notes.md` → 提取摘要到 `CHANGELOG.md` |
+| 分支合并/发布 | `docs/<branch>/release-notes.md` → 提取摘要到 `CHANGELOG.md`；合入时归档至主检出 `docs/<branch>/` |
 | 新增模块或架构变更 | `docs/ARCHITECTURE.md` + `README.md` |
 | 首次确立或变更项目级 UI 风格（美学模式、参考 slug、UI 实现方式） | `docs/ARCHITECTURE.md` §8（过程记录在 `docs/<branch>/design.md`「前端设计」） |
 | 新增/修改 API | `docs/API.md` |
@@ -217,19 +246,21 @@ docs/*/
 
 ## Part F — 分支合入合成流程
 
-当分支准备合并时，Agent 应：
+当分支准备合并时，Agent 在**主检出**上执行（读取来源为绑定 worktree）：
 
-1. 读取 `docs/<branch-id>/` 下所有过程文档
-2. 从 `release-notes.md` 提取摘要，追加到 `CHANGELOG.md`
-3. 根据决策矩阵，将增量合并到 `docs/ARCHITECTURE.md`（含 `design.md`「架构设计」与「前端设计」→ §8，见 `doc-file-definition-architecture` 映射表）、`docs/API.md`、`docs/DATABASE.md`
-4. 如有版本号变更，更新 `version.md`
-5. 如有项目范围/技术栈变更，更新 `README.md`
-6. 分支过程文档（`docs/<branch-id>/`）不合并到主分支，随 feature 分支清理
+1. 解析当前分支的 `<branch-id>` 与绑定 worktree 路径（`git worktree list`）
+2. 从 `{worktree}/docs/<branch-id>/` 读取全部过程文档（**不得**仅读主检出目录）
+3. 从 `release-notes.md` 提取摘要，追加到主检出 `CHANGELOG.md`
+4. 根据决策矩阵，将增量合并到主检出 `docs/ARCHITECTURE.md`（含 `design.md`「架构设计」与「前端设计」→ §8，见 `doc-file-definition-architecture` 映射表）、`docs/API.md`、`docs/DATABASE.md`
+5. 如有版本号变更，更新主检出 `version.md`
+6. 如有项目范围/技术栈变更，更新主检出 `README.md`
+7. **归档备份**：将 `{worktree}/docs/<branch-id>/` **整目录**复制到主检出 `{main}/docs/<branch-id>/`（覆盖或新建；含 `demo/`）
+8. 代码合入与清理：完成 merge 后 `git worktree remove` 并删除功能分支引用；**不**删除主检出 `docs/<branch-id>/` 归档
 
 ---
 
 ## 重要约束
 
 - **不得修改** `docs/superpowers/` 下的任何内容——Superpowers 自行管理其产出
-- 分支过程文档仅在 feature 分支存在期间维护，不进入主分支历史
-- 全局跟踪文档的更新应在分支合入时一并进行，避免在实现过程中修改全局文档造成冲突
+- 分支过程文档**不进入 Git 历史**（`docs/*/` 忽略）；开发期仅在 worktree 内维护；合入后在主检出保留**磁盘归档**供查阅
+- 全局跟踪文档的更新应在分支合入时于**主检出**一并进行，避免在功能分支 worktree 开发期间修改主检出全局文档造成冲突

@@ -90,7 +90,7 @@ my_harness/
 
 ## 文档体系
 
-由 `doc-project-structure` 规则定义。分支过程文档 9 个（5 必写 + 4 选写），全局跟踪文档 6 个；功能分支须绑定独立 git worktree（`main` 仅驻留主检出）。决策矩阵映射业务事件到文档动作。详见该规则。
+由 `doc-project-structure` 规则定义。分支过程文档 9 个（5 必写 + 4 选写），全局跟踪文档 6 个；功能分支须绑定独立 git worktree（`main` 仅驻留主检出），过程文档在 worktree 内维护、合入后在主检出 `docs/<branch-id>/` 归档（不进 Git）。决策矩阵映射业务事件到文档动作。详见该规则。
 
 ---
 

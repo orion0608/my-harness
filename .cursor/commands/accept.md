@@ -6,5 +6,5 @@
 
 1. 执行 Superpowers verification-before-completion 流程
 2. 执行 `/docs-project-check`，确保分支文档完整
-3. 读取 doc-project-structure 规则中的决策矩阵，执行分支合入合成流程（创建 release-notes → 更新全局跟踪文档）
+3. 读取 `doc-project-structure` 规则，执行分支合入合成流程
 4. 执行 Superpowers finishing-a-development-branch 流程
