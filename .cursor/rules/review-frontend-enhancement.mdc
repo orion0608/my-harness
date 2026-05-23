@@ -1,36 +1,174 @@
 ---
-description: 代码审查前端增强——在 requesting-code-review 派发子代理前，用内置浏览器验证交互并截图确认页面。
+description: 代码审查前端增强——主会话派发前浏览器验证（含 browser_cdp 控制台/网络诊断）并打包证据；子代理只读报告。
 alwaysApply: true
 ---
 
 # 代码审查前端增强
 
-补充 Superpowers **`requesting-code-review`**：在 **派发 code reviewer 子代理之前** 插入前端验证。不改流程顺序与 `code-reviewer.md`。何时做前端审查由 Superpowers 流程判定，本规则只规定该插入点上的动作。
+补充 Superpowers **`requesting-code-review`**：在 **派发 code reviewer 子代理之前** 由**主会话 Agent** 完成前端验证；**不改** `code-reviewer.md` 模板结构。何时做前端审查仍由 Superpowers 判定。
+
+## 职责边界
+
+| 执行者 | 阶段 | 做什么 | 不做什么 |
+|--------|------|--------|----------|
+| **主会话 Agent** | 派发**前** | 判 P/I、起服务、`cursor-ide-browser` 逐步验证、生成 **`FRONTEND_VERIFICATION_REPORT`**（见下） | 不在无浏览器证据时派子代理 |
+| **Code Reviewer 子代理** | 派发**后**（Task） | 读 git diff + 主会话注入的 **`FRONTEND_VERIFICATION_REPORT`**；对照 plan 评代码质量、缺口、测试 | **不**调用 `cursor-ide-browser`；**不**起服务；**不**重复做联动/截图（无报告则标「前端验证缺失」） |
+| **主会话 Agent** | 子代理**返回后** | 合并 Strengths/Issues、按 **`doc-project-structure`** 追加 **`review.md`**（含「前端验证」+ 审查结论） | 不把 MCP 操作步骤写给子代理执行 |
+
+子代理无会话历史，浏览器证据**只能**由主会话预先写入派发 prompt。
 
 ## 接入点
 
 ```
-1. Get git SHAs（BASE / HEAD）
-   【本规则】浏览器验证
-2. Dispatch code reviewer（code-reviewer.md）
-3. Act on feedback
+1. Get git SHAs（BASE / HEAD）                    ← Superpowers / 主会话
+   【本规则 · 主会话】1a–1c 前端验证 + 生成报告
+2. Dispatch code reviewer（code-reviewer.md）     ← 主会话；prompt 含 FRONTEND_VERIFICATION_REPORT
+3. Act on feedback                               ← 主会话
+   【本规则 · 主会话】追加 review.md
 ```
 
-## 验证
+---
 
-**浏览器优先级**（`priority-resolution`）：
+## 主会话 Agent · 派发前
 
-1. **首选**：IDE 内置浏览器 — 须调用 **`cursor-ide-browser`**（`browser_navigate`、`browser_snapshot`、`browser_take_screenshot` 等）
-2. **降级**：仅当内置浏览器 **确实无法使用**（如 MCP 未启用、调用失败、环境阻塞且已尝试恢复）时，才可用系统/外部浏览器；须在同次审查记录中说明降级原因
-3. **禁止**：用 curl / wget / 仅读 HTML 文件代替浏览器验证
+### 验证层级
 
-先获得 **http(s)://** URL（dev 服务、`preview-html` 或 Companion）；禁止 `file://`。
+**默认 I**。Get SHAs 后、打开浏览器前，根据 BASE..HEAD diff、`plan.md`、`requirement.md` 判定并写一行理由。
 
-| 类型 | 动作 |
-|------|------|
-| **交互** | `browser_navigate` → `browser_lock` → 按设计/计划走关键路径（click、fill 等）；页面结构变化后重新 `browser_snapshot` → `unlock` |
-| **页面** | 每页 `browser_navigate` + **`browser_take_screenshot`**，确认无空白、严重错位或崩态 |
+| 层级 | 代号 | 允许条件（须全部满足） |
+|------|------|------------------------|
+| **呈现级** | **P** | 无 API/DB/鉴权/代理契约变更；页面不依赖运行时业务数据或写操作；验收目标仅为布局、样式、文案、静态结构 |
+| **联动级** | **I** | 其余一律 I |
 
-## 记录
+边界不清时用 **AskQuestion**。不得以 P 级证据代替 I 级验收。
 
-验证结果（URL、覆盖范围、截图结论、发现的问题）作为本次审查内容的一部分，审查完成后按 **`doc-project-structure`** 追加 `review.md`，格式见 **`doc-file-definition-review`**。
+### 浏览器与 URL（`priority-resolution`）
+
+1. **首选**：**`cursor-ide-browser`**（`CallMcpTool`）；调用前查阅 MCP schema
+2. **降级**：内置浏览器确实不可用时可用系统浏览器，原因写入报告与 `review.md`
+3. **禁止**：curl / wget / 只读 HTML 代替浏览器；`file://`
+
+- **P**：`preview-html`、设计 Demo、静态 HTTP
+- **I**：**真实应用入口**；禁止仅用 `docs/**/demo/` 静态页代替主应用联动验收
+
+### 会话序（主会话每回合一次）
+
+1. `browser_tabs` — `action`: `list`
+2. 按层级选定 URL（`http(s)://`）；见「浏览器与 URL」P/I 差异
+3. 「关键路径逐步操作」（P/I 共用工具序；验收见「分级验收标准」）
+4. 全部路径后：`browser_lock` — `action`: `unlock`（本回合曾 lock 时）
+
+**lock 顺序**：先 `browser_navigate` 再 `browser_lock` action=`lock`；无交互的 URL 可跳过 lock。
+
+### browser_cdp 诊断（主会话 · 仅 `cursor-ide-browser`）
+
+调用前查阅 `browser_cdp` schema。禁止用 CDP `Input.*`；大响应落盘时读返回文件路径中的要点。
+
+**每个新 URL / `browser_navigate` 之后**（在主要交互前）执行 **CDP 初始化**：
+
+| 顺序 | `method` | 说明 |
+|------|----------|------|
+| 1 | `Log.enable` | `{}`；**P、I 均做** |
+| 2 | `Network.enable` | `{}`；**仅 I** |
+| 3 | `Runtime.evaluate` | `returnByValue: true`；注入页内收集器（见下脚本） |
+
+**路径里程碑、提交后、或该 URL 验收结束前**执行 **CDP 采集**：
+
+| 顺序 | `method` | 说明 |
+|------|----------|------|
+| 1 | `Runtime.evaluate` | `returnByValue: true`；读取收集器（见下脚本） |
+| 2 | （I 可选）`Runtime.evaluate` | 列举 `performance.getEntriesByType('resource')` 中 `responseStatus>=400` 或 `transferSize===0` 且为 http(s) 的项（摘要即可） |
+
+将 **errors / warnings 条数与代表性原文**（各最多 3 条）写入 `FRONTEND_VERIFICATION_REPORT` 的 **控制台/网络** 小节；有 error 须在报告中标为阻塞或缺陷，不得写「页面正常」。
+
+**注入脚本**（`Runtime.evaluate` → `expression`，单行或 IIFE）：
+
+```javascript
+(function(){if(window.__harnessVerify)return"ok";window.__harnessVerify={errors:[],warnings:[]};["error","warn"].forEach(function(l){var o=console[l];console[l]=function(){var m=Array.prototype.map.call(arguments,function(a){try{return typeof a==="object"?JSON.stringify(a):String(a)}catch(e){return String(a)}}).join(" ");window.__harnessVerify[l==="error"?"errors":"warnings"].push(m.slice(0,500));o.apply(console,arguments)}});window.addEventListener("error",function(e){window.__harnessVerify.errors.push((e.message||"")+" @ "+(e.filename||"")+":"+(e.lineno||""))});window.addEventListener("unhandledrejection",function(e){var r=e.reason;window.__harnessVerify.errors.push("Unhandled: "+(r&&(r.message||String(r))||"unknown"))});return"ok";})()
+```
+
+**读取脚本**（`Runtime.evaluate` → `expression`）：
+
+```javascript
+JSON.stringify(window.__harnessVerify||{errors:["collector missing"],warnings:[]})
+```
+
+**禁止**：仅凭 screenshot 断定无 JS 报错；未做 CDP 采集即填「控制台无错误」。**新 URL 须重新注入**（导航会清空页内状态）。
+
+### 关键路径逐步操作（P/I 共用 · 仅主会话执行）
+
+对 `plan.md` / 设计中的每条关键路径（**P** 可仅 1～2 屏/组件，**I** 须覆盖计划中的联动路径）循环；**禁止跳步**、**禁止无 snapshot 即 click**。
+
+| 步序 | 工具 | 要求 |
+|------|------|------|
+| 1 | `browser_navigate` | 路径或新 URL 起点；随后 **CDP 初始化**（见上） |
+| 2 | `browser_lock` | `action`: `lock`（**将交互**且未 lock 时；纯浏览可跳过） |
+| 3 | `browser_snapshot` | 取 `ref`；click/fill/select/type **必须**用本步 `ref` |
+| 4 | 交互（按需） | Tab/菜单/填表/提交；应用内 Tab 用 `browser_click`；**新 URL** → 回到步序 1 |
+| 5 | `browser_snapshot` | 步序 4 之后或 DOM 可能变化时**必做** |
+| 6 | `browser_take_screenshot` | 每 URL 至少一次；有交互则在里程碑再截（见「分级验收标准」） |
+| 6b | `browser_cdp` | **CDP 采集**（每 URL 终点必做；有提交/导航后再做） |
+| 7 | 重复 3→6b | 直至该路径结束；**采集见 error 须记入报告** |
+
+**仅浏览、无交互的单 URL**：1 → 3 → 6 → 6b（跳过 2、4、5）。
+
+### 分级验收标准（P/I 差异仅此节）
+
+| | **P（呈现级）** | **I（联动级）** |
+|--|----------------|----------------|
+| **URL** | `preview-html`、设计 Demo、静态 HTTP | 真实应用入口；禁止用 `docs/**/demo/` 顶替主应用 |
+| **CDP** | `Log.enable` + 注入 + 采集；**无** `Network.enable` | 含 `Network.enable`；可选资源 4xx 摘要 |
+| **截图/snapshot** | 布局、样式、文案、关键组件可见 | 同上，且须见**真实数据**或**写操作成功**（非永久 loading/空占位） |
+| **路径深度** | 满足呈现验收即可，可少于全计划 | 按计划关键路径完整走通 |
+| **报告「覆盖路径」** | 列出所验页面/组件；数据/写操作填 **不适用** | 逐条注明数据是否加载、写操作是否成功 |
+| **通过** | 呈现 OK + **CDP 无未解释的 errors** | 上栏 + 至少一条联动路径达标 + 网络无未解释失败 |
+
+不得以 **P** 的工具序省略 **6b CDP 采集** 或 snapshot；不得以 **P** 级报告代替 **I** 级联动验收。
+
+### 生成 `FRONTEND_VERIFICATION_REPORT`（派发前必写）
+
+主会话将下列内容整理为 Markdown 块，填入派发 code reviewer 的 Task `prompt`（建议放在 `{DESCRIPTION}` 之后、`{PLAN_OR_REQUIREMENTS}` 之前，标题固定）：
+
+```markdown
+## Frontend Verification Report（主会话已完成，请勿重复执行浏览器）
+
+- **验证层级**：P | I
+- **判定依据**：（一句话）
+- **环境**：（已启动服务、URL；I 须为真实应用入口）
+- **覆盖路径**：（逐条；**I** 须注明数据已加载 / 写操作是否成功；**P** 可写「数据/写操作：不适用」）
+- **证据摘要**：（snapshot/screenshot 结论；失败或降级须写明）
+- **控制台/网络**：（`browser_cdp` 采集：error/warn 条数与摘录；I 级若有 4xx/失败请求须注明）
+- **未覆盖 / 阻塞**：（如有）
+```
+
+无 Web/UI 变更时写：`## Frontend Verification Report\n不适用（本次 diff 无前端/UI）。`
+
+---
+
+## Code Reviewer 子代理 · 派发时
+
+使用 Superpowers `code-reviewer.md` 模板，**额外输入**仅为上一节的 **`FRONTEND_VERIFICATION_REPORT`**（只读证据）。
+
+**子代理须做：**
+
+- 对照 report 与 diff：实现是否与验证路径一致；report 是否标明 I 却仅有静态证据
+- 在 Issues 中引用：验证缺口、与 plan 不符的 UI 行为、缺少测试的交互路径、报告中的 **控制台 error / 网络失败**
+- report 写「不适用」且 diff 含前端时，在 Important 标明 **前端验证缺失**
+
+**子代理禁止：**
+
+- 调用 `cursor-ide-browser` 或要求用户「再开浏览器」代替已提供的 report
+- 在无 report 时假定「页面已测过」
+
+**子代理不必做：** 逐步列出 `browser_navigate` 等 MCP 调用（那是主会话派发前的职责）。
+
+---
+
+## 主会话 Agent · 子代理返回后
+
+1. 处理 Critical / Important 反馈
+2. 按 **`doc-project-structure`** 追加 **`review.md`**（格式见 **`doc-file-definition-review`**）：
+   - **前端验证**：从 `FRONTEND_VERIFICATION_REPORT` 归档（或写「不适用」）
+   - **审查结论**：子代理 Strengths / Issues / Assessment 摘要
+
+---

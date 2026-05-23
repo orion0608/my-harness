@@ -31,6 +31,15 @@ disable-model-invocation: true
 **审查方式：**
 <!-- 自审 / AI 审查 / 人工审查 -->
 
+**前端验证：**（涉及 Web/UI 时必填；无则写「不适用」）
+- 验证层级：P（呈现） / I（联动）
+- 判定依据：
+- 环境：（服务与 URL；I 级须为真实应用入口）
+- 覆盖路径：（逐条；I 级注明数据已加载或写操作是否成功）
+- 浏览器证据：（snapshot / screenshot 结论；降级须说明原因）
+- 控制台/网络：（browser_cdp 采集摘要；error 须列出）
+- 未覆盖：（若仅 P 或联动阻塞）
+
 **发现问题：**
 
 | # | 严重程度 | 问题描述 | 涉及文件 | 处理结果 |
@@ -59,6 +68,12 @@ disable-model-invocation: true
 
 - 记录审查来源：自审、AI 审查、同事审查
 - AI 审查可以标注使用的工具
+
+### 前端验证
+
+- 按 **`review-frontend-enhancement`** 填写；I 级须证明联动路径（非仅静态 Demo）
+- 「浏览器证据」须对应实际调用的 `cursor-ide-browser` 步骤摘要，不可臆造
+- 「控制台/网络」须来自 `browser_cdp` 采集结果（见 **`review-frontend-enhancement`**）
 
 ### 发现问题
 

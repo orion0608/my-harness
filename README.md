@@ -17,13 +17,14 @@ my_harness/
 ├── README.md
 ├── .gitignore
 └── .cursor/
-    ├── rules/                          8 个规则
+    ├── rules/                          9 个规则
     │   ├── my-harness-build.mdc         Harness 设计原理、操作边界与扩展约束
     │   ├── priority-resolution.mdc     优先级裁决
     │   ├── concise-communication.mdc   精简沟通
     │   ├── doc-project-structure.mdc   软件开发项目的文档架构
     │   ├── brainstorming-visual-enhancement.mdc  可视化增强
     │   ├── brainstorming-architecture-thinking-enhancement.mdc  架构思考增强（接入 architecture-design）
+    │   ├── review-frontend-enhancement.mdc  代码审查前端增强（P/I；browser_* + browser_cdp 诊断）
     │   ├── using-subagent-enhancement.mdc  Subagent 使用增强（默认 Subagent-Driven 派发）
     │   └── lesson-capture.mdc          经验捕获与技能提炼
     ├── skills/                         21 个技能目录
@@ -50,7 +51,7 @@ my_harness/
     │   │   ├── workflow-greenfield.md   0-1 初建完整工作流
     │   │   ├── workflow-iteration.md    1-N 迭代工作流（含 14 项调整判断）
     │   │   └── reference.md             架构要素参考 + 设计文档模板 + 检查清单
-    │   ├── tech-stack-guidance/         组织技术栈与系统开发模式（工具级/平台级）
+    │   ├── tech-stack-guidance/         组织技术栈与系统开发模式（工具级/平台级）；含 go-lifecycle/（Go 参考库 + scripts/ 运维脚本）
     │   ├── frontend-design/             前端 style+frame 路由（单技能）
     │   │   ├── SKILL.md                 模式路由、参考索引、子技能表
     │   │   ├── free-style/              开放式美学子技能（无 ui-frame 库时）
