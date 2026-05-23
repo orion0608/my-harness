@@ -26,7 +26,7 @@ my_harness/
     │   ├── brainstorming-architecture-thinking-enhancement.mdc  架构思考增强（接入 architecture-design）
     │   ├── using-subagent-enhancement.mdc  Subagent 使用增强（默认 Subagent-Driven 派发）
     │   └── lesson-capture.mdc          经验捕获与技能提炼
-    ├── skills/                         20 个技能目录
+    ├── skills/                         21 个技能目录
     │   ├── doc-file-definition-requirement/
     │   ├── doc-file-definition-design/   # design.md 含「前端设计」节（UI 必填）
     │   ├── doc-file-definition-plan/
@@ -56,6 +56,7 @@ my_harness/
     │   │   ├── free-style/              开放式美学子技能（无 ui-frame 库时）
     │   │   ├── ui-style/                参考数据（<slug>/DESIGN.md）
     │   │   └── ui-frame/                约束式子技能（antd 等）
+    │   ├── visual-companion-windows/    Windows 上 Superpowers Visual Companion 启动与降级
     │   └── preview-html/                本地 HTML HTTP 预览（daemon、多 root、Cursor 内置浏览器）
     │       ├── SKILL.md
     │       └── scripts/demo-preview-server.cjs

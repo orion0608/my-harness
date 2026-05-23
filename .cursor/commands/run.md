@@ -17,7 +17,7 @@
 |------|--------|------------|
 | 有 http(s) 可访问的前端或 Web 页面 | `priority-resolution` | **cursor-ide-browser**：`browser_navigate` → 必要时 `browser_lock` → `browser_snapshot` 或 `browser_take_screenshot` 作为就绪证据；汇报时给出完整 `http(s)://` URL |
 | 仅本地静态 HTML 目录、无 dev server | `preview-html` | 读取并执行该技能启动 HTTP 服务，用返回的 `url` 再 `browser_navigate` |
-| 项目使用 Visual Companion 预览 | `brainstorming-visual-enhancement` | Windows 按该规则 Visual Companion 启动备忘；浏览器打开 Companion 的 `url`（禁止 `file://`） |
+| 项目使用 Visual Companion 预览 | `visual-companion-windows` | Read 并执行该技能启动；`browser_navigate` 到 Companion `url`（禁止 `file://`） |
 | 宣称启动或展示成功 | `verification-before-completion` | 终端日志或浏览器 snapshot/截图至少一项，再向用户汇报 |
 
 **禁止**：未 `browser_navigate`（或等价打开）且未 snapshot/截图即断言「页面正常」「服务可用」。
