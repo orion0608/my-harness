@@ -61,7 +61,7 @@ my_harness/
     │   └── preview-html/                本地 HTML HTTP 预览（daemon、多 root、Cursor 内置浏览器）
     │       ├── SKILL.md
     │       └── scripts/demo-preview-server.cjs
-    └── commands/                       24 个命令
+    └── commands/                       26 个命令
         ├── design.md                   /design
         ├── plan.md                     /plan
         ├── implement.md                /implement
@@ -71,8 +71,10 @@ my_harness/
         ├── lesson-record.md            /lesson-record
         ├── docs-project-check.md       /docs-project-check
         ├── docs-regulation-show.md     /docs-regulation-show
-        ├── run.md                      /run
-        ├── shutdown.md                 /shutdown
+        ├── proc-run.md                 /proc-run
+        ├── proc-shutdown.md            /proc-shutdown
+        ├── proc-list.md                /proc-list
+        ├── proc-list-branch.md         /proc-list-branch
         ├── git-list-branch-all.md      /git-list-branch-all
         ├── git-list-branch-bug.md      /git-list-branch-bug
         ├── git-list-branch-rp.md       /git-list-branch-rp
@@ -169,8 +171,10 @@ my_harness/
 ### 项目管理
 | 命令 | 说明 |
 |------|------|
-| `/run` | 启动项目开发服务 |
-| `/shutdown` | 关闭项目相关进程 |
+| `/proc-run` | 启动项目开发服务；含 Web 时在 IDE 浏览器打开 |
+| `/proc-shutdown` | 关闭当前项目、当前分支的运行中服务 |
+| `/proc-list` | 列出当前项目全部运行中服务 |
+| `/proc-list-branch` | 列出当前项目、当前分支的运行中服务 |
 
 ### Harness 验证
 | 命令 | 说明 |

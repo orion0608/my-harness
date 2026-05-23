@@ -89,7 +89,7 @@ disable-model-invocation: true
 | 公共根 | `~/.harness-services`（Windows：`C:\Users\<用户>\.harness-services`） |
 | 注册文件 | `<根>/<AppName>/<分支名>+<instanceKey>.json`（分支名中 `/` 等非法字符替换为 `-`） |
 | instanceKey | 启动/worktree **绝对路径**的稳定 hash（12 位 hex） |
-| instances | **数组**，同 worktree 可多进程；排他启动对**同一注册文件**内仍存活实例逐个 shutdown → kill |
+| instances | **数组**，同 worktree 可多进程；每条含 `lastKeepalive`（UTC）；运行中每 **1 分钟**刷新；超过 **2 分钟**未更新视为可能异常退出 |
 
 与业务数据目录 `~/.<应用名>` 分离；注册目录仅用于跨进程发现与关闭。
 
@@ -99,7 +99,7 @@ disable-model-invocation: true
 
 | 方法 | 路径 | 说明 |
 | --- | --- | --- |
-| GET | `/__service/info` | 返回 pid、version、startedAt、executablePath、workingDirectory、port、appName、branchName、instanceKey |
+| GET | `/__service/info` | 返回 pid、version、startedAt、lastKeepalive、executablePath、workingDirectory、port、appName、branchName、instanceKey |
 | POST | `/__service/shutdown` | 200 后**先**按 pid 从注册表摘除，再 graceful shutdown |
 
 端口默认在 **50000–60000** 随机绑定 `127.0.0.1`。
@@ -113,7 +113,9 @@ disable-model-invocation: true
 | `version` | `{git short HEAD}@{startedAt RFC3339}`；非 git 目录为 `unknown@{startedAt}` |
 | `workingDirectory` | `os.Getwd()` 规范化绝对路径 |
 | `instanceKey` | `workingDirectory` 路径 hash |
-| 其余 | 库 / OS 自动（pid、startedAt、executablePath、port） |
+| 其余 | 库 / OS 自动（pid、startedAt、executablePath、port）；`lastKeepalive` 注册时写入并每分钟刷新 |
+
+**保活判定**：`lastKeepalive` 距今超过 2 分钟 → 可能异常退出（进程被强杀/崩溃）；注册表查询脚本会在每条 instance 上附加 `keepaliveStale: true|false`。
 
 服务固定绑定 `127.0.0.1`；`host` 不暴露在 info 中，注册表内仍保留供 shutdown 调用。
 

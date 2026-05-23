@@ -13,6 +13,7 @@ type InstanceRecord struct {
 	Host             string    `json:"host"`
 	Port             int       `json:"port"`
 	StartedAt        time.Time `json:"startedAt"`
+	LastKeepalive    time.Time `json:"lastKeepalive"`
 	Version          string    `json:"version"`
 	ExecutablePath   string    `json:"executablePath"`
 	WorkingDirectory string    `json:"workingDirectory"`
@@ -46,11 +47,17 @@ func loadRegistry(path string) (*RegistryFile, error) {
 	return &reg, nil
 }
 
-func (m *Manager) newInstanceRecord() InstanceRecord {	return InstanceRecord{
+func (m *Manager) newInstanceRecord() InstanceRecord {
+	now := m.nowUTC()
+	m.mu.Lock()
+	m.lastKeepalive = now
+	m.mu.Unlock()
+	return InstanceRecord{
 		PID:              m.pid,
 		Host:             m.host,
 		Port:             m.port,
 		StartedAt:        m.startedAt,
+		LastKeepalive:    now,
 		Version:          m.version,
 		ExecutablePath:   m.executablePath,
 		WorkingDirectory: m.workDir,

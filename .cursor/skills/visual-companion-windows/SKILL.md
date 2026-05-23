@@ -8,7 +8,7 @@ description: >
 
 # Visual Companion（Windows）
 
-Superpowers `visual-companion.md` 以 macOS/Linux 为主。**凡使用 Visual Companion（含 `brainstorming-visual-enhancement`、`/run` 等）须先 Read 本技能**；Windows 启动与屏写以本技能为准。HTML 降级预览见 `preview-html`。
+Superpowers `visual-companion.md` 以 macOS/Linux 为主。**凡使用 Visual Companion 须先 Read 本技能**；Windows 启动与屏写以本技能为准。HTML 降级预览见 `preview-html`。
 
 ## 根因
 

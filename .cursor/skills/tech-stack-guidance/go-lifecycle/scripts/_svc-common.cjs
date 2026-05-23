@@ -6,6 +6,7 @@ const os = require('os');
 const http = require('http');
 
 const DEFAULT_HOST = '127.0.0.1';
+const KEEPALIVE_STALE_MS = 2 * 60 * 1000;
 const INSTANCE_KEY_RE = /^(.+)\+([0-9a-f]{12})\.json$/i;
 
 function getRegistryRoot(override) {
@@ -72,16 +73,37 @@ function listRegistryFiles(registryRoot, appName, branchName) {
     .sort();
 }
 
+function isKeepaliveStale(lastKeepalive) {
+  if (!lastKeepalive) return true;
+  const ts = Date.parse(lastKeepalive);
+  if (Number.isNaN(ts)) return true;
+  return Date.now() - ts > KEEPALIVE_STALE_MS;
+}
+
+function enrichRegistry(registry) {
+  if (!registry || !Array.isArray(registry.instances)) {
+    return registry;
+  }
+  return {
+    ...registry,
+    instances: registry.instances.map((inst) => ({
+      ...inst,
+      keepaliveStale: isKeepaliveStale(inst.lastKeepalive),
+    })),
+  };
+}
+
 function loadRegistryEntries(registryRoot, appName, branchName) {
   const files = listRegistryFiles(registryRoot, appName, branchName);
   return files.map((filePath) => {
     const base = path.basename(filePath);
     const parsed = parseRegistryFileName(base);
+    const registry = enrichRegistry(readJsonFile(filePath));
     return {
       path: filePath,
       branchName: parsed?.branchName ?? null,
       instanceKey: parsed?.instanceKey ?? null,
-      registry: readJsonFile(filePath),
+      registry,
     };
   });
 }

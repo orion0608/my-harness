@@ -37,6 +37,7 @@ type InfoResponse struct {
 	PID              int       `json:"pid"`
 	Version          string    `json:"version"`
 	StartedAt        time.Time `json:"startedAt"`
+	LastKeepalive    time.Time `json:"lastKeepalive"`
 	ExecutablePath   string    `json:"executablePath"`
 	WorkingDirectory string    `json:"workingDirectory"`
 	Port             int       `json:"port"`
@@ -58,6 +59,10 @@ type Manager struct {
 	pid            int
 	port           int
 	startedAt      time.Time
+	lastKeepalive  time.Time
+
+	keepaliveMu     sync.Mutex
+	keepaliveCancel context.CancelFunc
 
 	mu     sync.Mutex
 	server *http.Server
@@ -124,6 +129,10 @@ func (m *Manager) RegistryPath() string {
 
 // Info returns the current service metadata.
 func (m *Manager) Info() InfoResponse {
+	m.mu.Lock()
+	lastKeepalive := m.lastKeepalive
+	m.mu.Unlock()
+
 	return InfoResponse{
 		AppName:          m.appName,
 		BranchName:       m.branchName,
@@ -131,6 +140,7 @@ func (m *Manager) Info() InfoResponse {
 		PID:              m.pid,
 		Version:          m.version,
 		StartedAt:        m.startedAt,
+		LastKeepalive:    lastKeepalive,
 		ExecutablePath:   m.executablePath,
 		WorkingDirectory: m.workDir,
 		Port:             m.port,
@@ -176,6 +186,9 @@ func (m *Manager) ListenAndServe(ctx context.Context, mux *http.ServeMux) error 
 	}
 	defer func() { _ = m.removeSelfRecord() }()
 
+	m.startKeepalive(ctx)
+	defer m.stopKeepalive()
+
 	m.server = &http.Server{Handler: mux}
 	errCh := make(chan error, 1)
 	go func() {
@@ -204,6 +217,7 @@ func (m *Manager) mountRoutes(mux *http.ServeMux) {
 
 // gracefulStop unregisters this process (matched by pid) then shuts down the server.
 func (m *Manager) gracefulStop(ctx context.Context) error {
+	m.stopKeepalive()
 	if err := m.removeSelfRecord(); err != nil {
 		return err
 	}
