@@ -29,8 +29,8 @@ node .cursor/skills/preview-html/scripts/demo-preview-server.cjs --root <目录B
 ```
 
 3. **读 stdout**：首行 JSON。`reused: true` 表示该目录已有实例，无需新进程。
-4. **打开预览**：**cursor-ide-browser** → `browser_navigate` 到 JSON 的 `url`。
-5. **同目录再次预览**：再执行同 `--root` 即可复用；换页面只改 `browser_navigate`。
+4. **打开预览**：Read **`cursor-ide-browser-usage`** → `browser_navigate` 到 JSON 的 `url` 并按该技能验收。
+5. **同目录再次预览**：再执行同 `--root` 即可复用；换页面时仍按 **`cursor-ide-browser-usage`** 操作。
 6. **结束**：`--stop --root <目录>` 只停该目录；`--stop-all` 停全部。
 
 ## 空闲与退出（daemon）
@@ -79,7 +79,7 @@ node .cursor/skills/preview-html/scripts/demo-preview-server.cjs --root <目录B
 
 ## 在 Cursor 中打开
 
-- ✅ **cursor-ide-browser** → `browser_navigate`
+- ✅ Read **`cursor-ide-browser-usage`**，用返回的 `url` 打开并验收
 - ❌ `file://`
 
 ## 停止服务

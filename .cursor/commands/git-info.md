@@ -1,4 +1,4 @@
-# /git-current-branch-info
+# /git-info
 
 打印当前分支的完整信息。
 

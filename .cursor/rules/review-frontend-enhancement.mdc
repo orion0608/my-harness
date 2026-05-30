@@ -42,23 +42,22 @@ alwaysApply: true
 
 边界不清时用 **AskQuestion**。不得以 P 级证据代替 I 级验收。
 
-### 浏览器与 URL（`priority-resolution`）
+### 浏览器与 URL
 
-1. **首选**：**`cursor-ide-browser`**（`CallMcpTool`）；调用前查阅 MCP schema
+1. **首选**：Read **`cursor-ide-browser-usage`** 并按其执行 MCP 工具序（`CallMcpTool` + 查阅 schema）
 2. **降级**：内置浏览器确实不可用时可用系统浏览器，原因写入报告与 `review.md`
-3. **禁止**：curl / wget / 只读 HTML 代替浏览器；`file://`
+3. **禁止**：curl / wget / 只读 HTML 代替浏览器；`file://`（见 **`cursor-ide-browser-usage`**）
 
 - **P**：`preview-html`、设计 Demo、静态 HTTP
 - **I**：**真实应用入口**；禁止仅用 `docs/**/demo/` 静态页代替主应用联动验收
 
-### 会话序（主会话每回合一次）
+### 会话序与路径操作（Review 增量）
 
-1. `browser_tabs` — `action`: `list`
-2. 按层级选定 URL（`http(s)://`）；见「浏览器与 URL」P/I 差异
-3. 「关键路径逐步操作」（P/I 共用工具序；验收见「分级验收标准」）
-4. 全部路径后：`browser_lock` — `action`: `unlock`（本回合曾 lock 时）
-
-**lock 顺序**：先 `browser_navigate` 再 `browser_lock` action=`lock`；无交互的 URL 可跳过 lock。
+1. Read **`cursor-ide-browser-usage`** — 会话序与路径逐步操作（通用工具序）
+2. 按层级选定 URL（`http(s)://`）；见上节 P/I 差异
+3. 对 `plan.md` / 设计中每条关键路径循环（**P** 可仅 1～2 屏/组件，**I** 须覆盖计划中的联动路径）
+4. 每 URL 在 **`cursor-ide-browser-usage`** 步序 1（navigate）之后插入 **CDP 初始化**（见下）；在路径终点插入 **CDP 采集**（对应通用步序 6 之后，记为 **6b**）
+5. **采集见 error 须记入报告**；不得以 P 级报告代替 I 级联动验收
 
 ### browser_cdp 诊断（主会话 · 仅 `cursor-ide-browser`）
 
@@ -93,26 +92,9 @@ alwaysApply: true
 JSON.stringify(window.__harnessVerify||{errors:["collector missing"],warnings:[]})
 ```
 
-**禁止**：仅凭 screenshot 断定无 JS 报错；未做 CDP 采集即填「控制台无错误」。**新 URL 须重新注入**（导航会清空页内状态）。
+**禁止**：仅凭 screenshot 断定无 JS 报错；未做 CDP 采集即填「控制台无错误」。**新 URL 须重新注入**（导航会清空页内状态）。通用 lock / snapshot / ref 规则见 **`cursor-ide-browser-usage`**。
 
-### 关键路径逐步操作（P/I 共用 · 仅主会话执行）
-
-对 `plan.md` / 设计中的每条关键路径（**P** 可仅 1～2 屏/组件，**I** 须覆盖计划中的联动路径）循环；**禁止跳步**、**禁止无 snapshot 即 click**。
-
-| 步序 | 工具 | 要求 |
-|------|------|------|
-| 1 | `browser_navigate` | 路径或新 URL 起点；随后 **CDP 初始化**（见上） |
-| 2 | `browser_lock` | `action`: `lock`（**将交互**且未 lock 时；纯浏览可跳过） |
-| 3 | `browser_snapshot` | 取 `ref`；click/fill/select/type **必须**用本步 `ref` |
-| 4 | 交互（按需） | Tab/菜单/填表/提交；应用内 Tab 用 `browser_click`；**新 URL** → 回到步序 1 |
-| 5 | `browser_snapshot` | 步序 4 之后或 DOM 可能变化时**必做** |
-| 6 | `browser_take_screenshot` | 每 URL 至少一次；有交互则在里程碑再截（见「分级验收标准」） |
-| 6b | `browser_cdp` | **CDP 采集**（每 URL 终点必做；有提交/导航后再做） |
-| 7 | 重复 3→6b | 直至该路径结束；**采集见 error 须记入报告** |
-
-**仅浏览、无交互的单 URL**：1 → 3 → 6 → 6b（跳过 2、4、5）。
-
-### 分级验收标准（P/I 差异仅此节）
+### 分级验收标准（P/I 差异）
 
 | | **P（呈现级）** | **I（联动级）** |
 |--|----------------|----------------|
@@ -160,7 +142,7 @@ JSON.stringify(window.__harnessVerify||{errors:["collector missing"],warnings:[]
 - 调用 `cursor-ide-browser` 或要求用户「再开浏览器」代替已提供的 report
 - 在无 report 时假定「页面已测过」
 
-**子代理不必做：** 逐步列出 `browser_navigate` 等 MCP 调用（那是主会话派发前的职责）。
+**子代理不必做：** 逐步列出 MCP 浏览器调用（主会话已按 **`cursor-ide-browser-usage`** + 本节 CDP 完成）。
 
 ---
 

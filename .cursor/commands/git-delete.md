@@ -1,4 +1,4 @@
-# /git-current-branch-delete
+# /git-delete
 
 删除当前分支及其绑定的 worktree。
 
@@ -7,7 +7,7 @@
 1. 获取当前分支名
 2. **禁止删除主分支**：若当前分支为 `main` 或 `master`，拒绝执行并提示「主分支不可删除」
 3. 用 `git worktree list` 解析当前分支绑定的 worktree 路径（可能即当前目录）
-4. 打印当前分支完整信息（参考 `/git-current-branch-info` 的输出格式，含 worktree 绑定状态）
+4. 打印当前分支完整信息（参考 `/git-info` 的输出格式，含 worktree 绑定状态）
 5. 使用 **AskQuestion** 工具要求用户二次确认删除，提示将删除分支、移除 worktree 目录及未推送提交风险
 6. 用户确认后，按顺序执行（须在**主检出**所在目录操作，或先 `cd` 到主检出）：
    1. 若当前 shell 位于待删 worktree 内，先切换到主检出目录（`main` / `master` 所在路径）

@@ -27,7 +27,7 @@ my_harness/
     │   ├── review-frontend-enhancement.mdc  代码审查前端增强（P/I；browser_* + browser_cdp 诊断）
     │   ├── using-subagent-enhancement.mdc  Subagent 使用增强（默认 Subagent-Driven 派发）
     │   └── lesson-capture.mdc          经验捕获与技能提炼
-    ├── skills/                         21 个技能目录
+    ├── skills/                         22 个技能目录
     │   ├── doc-file-definition-requirement/
     │   ├── doc-file-definition-design/   # design.md 含「前端设计」（美学/界面风格/色系/动效）
     │   ├── doc-file-definition-plan/
@@ -58,10 +58,11 @@ my_harness/
     │   │   ├── ui-style/                参考数据（<slug>/DESIGN.md）
     │   │   └── ui-frame/                约束式子技能（antd 等）
     │   ├── visual-companion-windows/    Windows 上 Superpowers Visual Companion 启动与降级
+    │   ├── cursor-ide-browser-usage/    cursor-ide-browser MCP 通用工具序（会话/lock/snapshot/交互/截图）
     │   └── preview-html/                本地 HTML HTTP 预览（daemon、多 root、Cursor 内置浏览器）
     │       ├── SKILL.md
     │       └── scripts/demo-preview-server.cjs
-    └── commands/                       26 个命令
+    └── commands/                       22 个命令
         ├── design.md                   /design
         ├── plan.md                     /plan
         ├── implement.md                /implement
@@ -75,18 +76,14 @@ my_harness/
         ├── proc-shutdown.md            /proc-shutdown
         ├── proc-list.md                /proc-list
         ├── proc-list-branch.md         /proc-list-branch
-        ├── git-list-branch-all.md      /git-list-branch-all
-        ├── git-list-branch-bug.md      /git-list-branch-bug
-        ├── git-list-branch-rp.md       /git-list-branch-rp
-        ├── git-current-branch-info.md  /git-current-branch-info
-        ├── git-current-branch-commit.md /git-current-branch-commit
-        ├── git-current-branch-merge.md /git-current-branch-merge
-        ├── git-current-branch-push.md  /git-current-branch-push
+        ├── git-list-branch.md          /git-list-branch
+        ├── git-info.md                 /git-info
+        ├── git-commit.md               /git-commit
+        ├── git-push.md                 /git-push
         ├── git-init.md                  /git-init
         ├── git-load.md                  /git-load
-        ├── git-current-branch-delete.md   /git-current-branch-delete
-        ├── help.md                     /help
-        ├── gogogo.md                    /gogogo
+        ├── git-delete.md                /git-delete
+        ├── go.md                        /go
         ├── myharness-test-project.md   /myharness-test-project
 ```
 
@@ -184,22 +181,18 @@ my_harness/
 ### Git 分支管理
 | 命令 | 说明 |
 |------|------|
-| `/git-list-branch-all` | 列出所有未 accept 的文档管理分支 |
-| `/git-list-branch-bug` | 列出 Bug 类型未 accept 分支 |
-| `/git-list-branch-rp` | 列出需求类型未 accept 分支 |
-| `/git-current-branch-info` | 打印当前分支完整信息（含 worktree 绑定） |
-| `/git-current-branch-commit` | 提交当前分支变更 |
-| `/git-current-branch-merge` | 合并当前分支到主分支 |
-| `/git-current-branch-push` | 推送当前分支到远端 |
+| `/git-list-branch [类型]` | 列出未 accept 分支；未指明类型为全部，`bug` / `rp`（或用户声明 Bug、需求）按类型筛选 |
+| `/git-info` | 打印当前分支完整信息（含 worktree 绑定） |
+| `/git-commit` | 提交当前分支变更 |
+| `/git-push` | 推送当前分支到远端 |
 | `/git-init` | 初始化 Git 仓库 |
 | `/git-load [远端]` | 从远端同步项目（本地为空时） |
-| `/git-current-branch-delete` | 删除分支并移除绑定 worktree（main 禁止删除，需二次确认） |
+| `/git-delete` | 删除分支并移除绑定 worktree（main 禁止删除，需二次确认） |
 
 ### 体系帮助
 | 命令 | 说明 |
 |------|------|
-| `/help` | Harness 体系介绍和使用指南 |
-| `/gogogo` | Agent 异常中断后接续执行 |
+| `/go` | Agent 异常中断后接续执行 |
 
 ---
 

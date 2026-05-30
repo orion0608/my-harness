@@ -1,4 +1,4 @@
-# /git-current-branch-commit
+# /git-commit
 
 提交当前分支的变更。
 

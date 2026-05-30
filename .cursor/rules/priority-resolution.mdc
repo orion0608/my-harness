@@ -36,9 +36,11 @@ alwaysApply: true
 
 | 工具 | 何时用 |
 |------|--------|
-| **AskQuestion** | 需要用户选择（单选、多选）、确认、授权或定方向时；其它规则要求 AskQuestion 时 |
+| **AskQuestion** | 需要用户选择（单选、多选）、询问用户是否xxx、确认、授权或定方向时；其它规则要求 AskQuestion 时 |
 | **TodoWrite** | 多步骤任务：开工前列清单，推进时更新 |
-| **cursor-ide-browser** | 凡涉及网页的查看、操作、验证（见下节）；宣称 UI/前端/Web 相关「完成」前须有浏览器证据 |
+| **cursor-ide-browser** | 凡涉及网页的查看、操作、验证（见下节）；Read **`cursor-ide-browser-usage`** 执行 MCP 工具序；宣称 UI/前端/Web 相关「完成」前须有浏览器证据 |
+
+**TodoWrite 与实做同步**：多步骤任务须实际调用 TodoWrite 列清单；推进中每完成、切换或阻塞一步须检查并更新待办状态（`completed` / `in_progress` / `cancelled`），勿留与实际情况不符或过期的 `in_progress`。
 
 **禁止**：正文里开放式索选（「你选 A 还是 B？」）、默认替用户做决定、纯文字描述界面或页面行为——应用上表工具替代（用户已说清楚的除外）。
 
@@ -46,32 +48,11 @@ alwaysApply: true
 
 ### cursor-ide-browser（内置浏览器 MCP）
 
-涉及**网页**的任务须通过 MCP **`cursor-ide-browser`** 实际执行，不得仅用文字假定页面状态，也不得在未打开页面前声称验证通过。
+涉及**网页**的任务：第三级须实际调用 **`cursor-ide-browser`**，Read **`cursor-ide-browser-usage`** 并按其执行。**适用 / 不适用 / 禁止替代 / 场景 / 工具逐步序**均以该技能为准，本规则不重复。
 
-| 场景 | 必须使用浏览器 |
-|------|----------------|
-| UI / HTML / Demo 预览与确认 | `browser_navigate` 打开可访问 URL（HTTP 或 Companion URL），`browser_snapshot` 确认布局与内容 |
-| 前端功能验证、回归、手工测试 | 在浏览器中走关键用户路径（导航、点击、填表等），变更后重新 `browser_snapshot` |
-| Bug 复现与修复确认（Web） | 按复现步骤在浏览器中执行，修复后同路径再验证 |
-| 设计/验收中的「能打开、能操作」 | 与 `brainstorming-visual-enhancement`、`preview-html`、Visual Companion 衔接：先获得 **http(s)://** 地址，再 navigate（**禁止** `file://`） |
+不得仅用文字假定页面状态，不得未打开页面就宣称验证通过。
 
-**不适用**（无需强行开浏览器）：纯后端/API/CLI/单元测试且无 DOM 或浏览器行为；用户明确只要代码审查或静态分析。
-
-**禁止替代浏览器的情形**：
-
-- 需要 DOM、渲染、样式、客户端脚本或用户交互时，用 `curl`/`wget`/仅读 HTML 文件代替浏览器验证
-- 未 `browser_navigate`（或等价打开）且未 `browser_snapshot`（或截图）就断言「页面正常」「测试通过」「按钮可用」
-- 在回复中长篇描述页面结构或交互，却不调用浏览器工具
-
-**推荐流程**（调用前须查阅该 MCP 工具 schema）：
-
-1. `browser_tabs`（`action: list`）了解已有标签页
-2. `browser_navigate` 到目标 URL → 需要交互时 `browser_lock`（`action: lock`）
-3. 任何点击、输入、导航等**可能改变页面结构**的操作前/后：以最新 `browser_snapshot` 为结构依据（交互后结构不明则再 snapshot）
-4. 宣称完成或向用户汇报 Web 验证结果前：至少一次 snapshot 或 `browser_take_screenshot` 作为证据摘要
-5. 本回合浏览器操作结束：`browser_lock`（`action: unlock`）
-
-与 **`preview-html`**、Visual Companion 配合时：先按对应技能/规则启动 HTTP 服务或 Companion，再用本 MCP 打开返回的 URL，不得混用 `file://`。
+**URL 来源**：与 **`preview-html`**、Visual Companion（经 **`brainstorming-visual-enhancement`** / **`visual-companion-windows`**）衔接，先获得 **http(s)://**，再 Read 技能打开并验收；禁止 `file://`。
 
 ---
 

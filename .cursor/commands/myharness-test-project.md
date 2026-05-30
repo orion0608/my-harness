@@ -1,4 +1,4 @@
-# /myharness-test-project <path>
+# /myharness-test-project
 
 声明在 `test-project/` 下开始针对某一子项目的 **Harness 验证**，并激活该子项目的**逻辑工作区**。
 
@@ -9,20 +9,22 @@
 ## 用法
 
 ```
-/myharness-test-project <path>
+/myharness-test-project <project-name>
 ```
 
-| 参数 | 必填 | 说明 |
-|------|:----:|------|
-| `<path>` | ✅ | 子项目路径，**必须**位于本项目 `test-project/` 目录下 |
 
-**合法路径示例**（均解析为 `test-project/<name>/`）：
+| 参数               | 必填  | 说明       |
+| ---------------- | --- | -------- |
+| `<project-name>` | ✅   | 子项目根目录名称 |
 
-- `test-project/demo-app`
-- `demo-app`（省略 `test-project/` 前缀时自动补全）
+
+**合法路径示例**：
+
+- `demo-app`（强制认为其物理路径为 ~/`test-project/demo-app` ，~代表my_harness项目的物理路径）
 
 **非法示例**：
 
+- `test-project/demo-app` — 禁止使用路径形式
 - `../other` — 禁止路径穿越
 - `D:\code\other-project` — 必须在 `test-project/` 下
 - 空参数 — 须先指定路径
@@ -31,11 +33,10 @@
 
 ### 1. 解析并校验路径
 
-1. 若未提供 `<path>`，列出 `test-project/` 下已有子目录（如有），并用 **AskQuestion** 或明确提示要求用户指定路径；**不得**自行猜测或默认选中。
+1. 若未提供 `<project-name>`，列出 `test-project/` 下已有子目录（如有），并用 **AskQuestion** 或明确提示要求用户指定路径；**不得**自行猜测或默认选中。
 2. 规范化路径：
-   - 去除首尾空白与多余斜杠
-   - 若不以 `test-project/` 开头，则前置 `test-project/`
-   - 拒绝包含 `..`、绝对盘符路径、或解析后落在 `test-project/` 之外的任何输入
+  - 去除首尾空白与多余斜杠
+  - 强制认为其物理路径为 ~/`test-project/<project-name>` ，~代表my_harness项目的物理路径
 3. 解析后的**逻辑开发根目录**记为 `<logical-root>`（相对于 `my_harness` 项目根，如 `test-project/demo-app`）。
 
 ### 2. 检查子项目目录
@@ -82,3 +83,4 @@ Harness 根目录（物理工作区）：<my_harness 绝对路径>
 
 - 激活后，用户在 Harness 体系内发起的、面向「当前项目」的操作，默认以 `<logical-root>` 为逻辑项目根（具体边界见 `my-harness-build` 规则）。
 - Harness 元数据（`.cursor/` 等）的修改仍仅限 `my_harness` 可操作范围，见 `my-harness-build` 规则。
+

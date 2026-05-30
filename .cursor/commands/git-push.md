@@ -1,4 +1,4 @@
-# /git-current-branch-push
+# /git-push
 
 推送当前分支到远端。
 
