@@ -7,7 +7,7 @@ description: >
 
 # Frontend Design
 
-前端 **style + frame + 动效** 的唯一路由技能。`design.md`「前端设计」或用户明示为输入；何时 AskQuestion 由调用方（如 `brainstorming-visual-enhancement`）决定。
+前端 **style + frame + 动效 + 图表** 的唯一路由技能。`design.md`「前端设计」或用户明示为输入；何时 AskQuestion 由调用方（如 `brainstorming-visual-enhancement`）决定。
 
 HTML 预览 → **`preview-html`**。
 
@@ -18,6 +18,7 @@ HTML 预览 → **`preview-html`**。
 | `free-style/SKILL.md` | 开放式美学子技能（无 `ui-frame` 库时加载） |
 | `ui-style/<slug>/DESIGN.md` | 参考式数据（无独立子技能） |
 | `ui-frame/<库>/SKILL.md` | 约束式子技能（如 `antd`） |
+| `charts/echarts/SKILL.md` | 业务图表实现信源（ECharts 绑定与常见模式） |
 
 ## 模式与路由
 
@@ -35,9 +36,47 @@ HTML 预览 → **`preview-html`**。
 → 开放式且无库 → **Read** free-style 子技能
 → 否则 → 纯 HTML/CSS/JS
 → 动效路由 → GSAP 插件技能（若命中，见下节）
+→ 图表路由 → echarts 子技能（若命中，见下节）
 ```
 
 **实现栈兜底**（无 design.md）：用户指定 > lockfile > 源码 import > 纯 HTML。
+
+## 图表路由
+
+业务数据可视化 **绑定与常见模式** 由 **`charts/echarts`** 子技能提供。本技能只定义 **何时 Read** 该子技能；禁止在 Harness 内重复 ECharts option 全文。
+
+### 输入（按优先级）
+
+1. `design.md`「前端设计」→ **图表库**
+2. 用户明示（如「用 @ant-design/charts」）
+3. 实现需求推断 + lockfile / 源码 import（见下「默认策略」）
+
+### 判定
+
+| 条件 | 行为 |
+|------|------|
+| 图表库 = `无` 或 `CSS only`，且无业务可视化需求 | 不上图表库；装饰性图形用 CSS/SVG |
+| 图表库 = `ECharts`，或业务 dashboard / 趋势 / 占比 / 统计图 | **Read** `charts/echarts` 子技能 |
+| 设计文档 `FLOW` / `ARCH` / `DATA` 结构图 | **Mermaid**（`brainstorming-visual-enhancement`）；不用 ECharts 替代 |
+| lockfile 或源码已用 `@ant-design/charts` / G2 系 | 尊重既有栈，不强行换 ECharts |
+| 用户指定 Chart.js、Recharts、D3 等 | 尊重选型，不强行 ECharts |
+
+### 默认策略（design.md 未记录时）
+
+- **含 dashboard、统计、趋势、占比、KPI 等业务图表** → **优先 ECharts**（非强制）；写代码前 **Read** `charts/echarts`
+- **纯 CRUD、无图表** → 不上库
+- **antd 后台且 lockfile 已有 @ant-design/charts** → 沿用 G2 系，不默认 ECharts
+- **极简 sparkline / 纯装饰** → CSS/SVG 即可；不为微图形单独上 ECharts
+
+### 次序
+
+style/frame 路由完成 → 动效路由 → **图表路由**（写图表代码前）→ 按需 Read `charts/echarts` 子技能。
+
+### 禁止
+
+- 禁止未 Read `charts/echarts` 就写复杂 ECharts option（多 series、地图、联动等）
+- 禁止在 Harness 技能内复制 ECharts API / option 全文
+- 禁止用 Mermaid 或静态图替代产品 UI 中的交互式业务图表
 
 ## 动效路由
 
@@ -158,8 +197,17 @@ bmw, bmw-m, bugatti, ferrari, lamborghini, renault, tesla
 
 slack
 
+### 图表子技能
+
+| 子技能 | 路径 |
+|--------|------|
+| `echarts` | `charts/echarts/` |
+
+新增图表库：`charts/<名>/SKILL.md` + 上表 + README + 图表路由判定表。
+
 ## 扩展
 
 - 新参考：新增 `ui-style/<slug>/` + 更新本节索引
 - 新库：`ui-frame/<名>/` + 约束式子技能表
+- 新图表库：`charts/<名>/` + 图表子技能表 + 图表路由判定
 - 开放式引导变更：更新 `free-style` 子技能（父技能表无需改，除非更名）

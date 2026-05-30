@@ -29,7 +29,7 @@ my_harness/
     │   └── lesson-capture.mdc          经验捕获与技能提炼
     ├── skills/                         22 个技能目录
     │   ├── doc-file-definition-requirement/
-    │   ├── doc-file-definition-design/   # design.md 含「前端设计」（美学/界面风格/色系/动效）
+    │   ├── doc-file-definition-design/   # design.md 含「前端设计」（美学/界面风格/色系/动效/图表库）
     │   ├── doc-file-definition-plan/
     │   ├── doc-file-definition-devlog/
     │   ├── doc-file-definition-accept-log/
@@ -52,11 +52,12 @@ my_harness/
     │   │   ├── workflow-iteration.md    1-N 迭代工作流（含 14 项调整判断）
     │   │   └── reference.md             架构要素参考 + 设计文档模板 + 检查清单
     │   ├── tech-stack-guidance/         组织技术栈与系统开发模式（工具级/平台级）；含 go-lifecycle/（Go 参考库 + scripts/ 运维脚本）
-    │   ├── frontend-design/             前端 style+frame+动效 路由（单技能）
+    │   ├── frontend-design/             前端 style+frame+动效+图表 路由（单技能）
     │   │   ├── SKILL.md                 模式路由、参考索引、子技能表
     │   │   ├── free-style/              开放式美学子技能（无 ui-frame 库时）
     │   │   ├── ui-style/                参考数据（<slug>/DESIGN.md）
-    │   │   └── ui-frame/                约束式子技能（antd 等）
+    │   │   ├── ui-frame/                约束式子技能（antd 等）
+    │   │   └── charts/echarts/          业务图表子技能（ECharts 绑定与常见模式；优先默认非强制）
     │   ├── visual-companion-windows/    Windows 上 Superpowers Visual Companion 启动与降级
     │   ├── cursor-ide-browser-usage/    cursor-ide-browser MCP 通用工具序（会话/lock/snapshot/交互/截图）
     │   └── preview-html/                本地 HTML HTTP 预览（daemon、多 root、Cursor 内置浏览器）

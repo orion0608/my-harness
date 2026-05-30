@@ -15,6 +15,17 @@ This skill guides creation of distinctive, production-grade frontend interfaces 
 
 The user provides frontend requirements: a component, page, application, or interface to build. They may include context about the purpose, audience, or technical constraints.
 
+## ui-style 可选参考（缩窄思考范围）
+
+进入 **Design Thinking** 自由发散**之前**，先快速看 `ui-style/` 里有没有与当前项目相近的风格，以便更快、更精确地缩小思考范围。
+
+1. **扫描范围**：slug 列表见父技能 `frontend-design`「参考索引」；可 List/Glob `ui-style/` 目录名，**禁止**无差别 Read 整个 `ui-style/` 下全部 `DESIGN.md`
+2. **匹配维度**：项目领域（FinTech / SaaS / 开发者工具等）、界面调性（极简 / 科技感 / 编辑感等）、用户或品牌气质
+3. **行为**：若有相近 slug → 可 **Read** 该 `DESIGN.md`（通常 **1～2 份**）作色板、字体、版式、Do/Don't 灵感；**是否命中、是否采用均由 Agent 自定**，仍走开放式，不强制切换为参考式路由
+4. **未命中或用户要求纯原创**：直接进入下节 Design Thinking，不必 AskQuestion 选 slug
+
+**边界**：本步仅为 free-style 提供更多优秀参考，**不替代** `design.md`「前端设计」或参考式模式的 slug 确认流程。
+
 ## Design Thinking
 
 Before coding, understand the context and commit to a BOLD aesthetic direction:
@@ -37,6 +48,7 @@ Focus on:
 - **Typography**: Choose fonts that are beautiful, unique, and interesting. Avoid generic fonts like Arial and Inter; opt instead for distinctive choices that elevate the frontend's aesthetics; unexpected, characterful font choices. Pair a distinctive display font with a refined body font.
 - **Color & Theme**: Commit to a cohesive aesthetic. Use CSS variables for consistency. Dominant colors with sharp accents outperform timid, evenly-distributed palettes.
 - **Motion**: 动效库与实现方式由 `frontend-design`「动效路由」决定；本技能只管美学。简单 hover/入场可用 CSS；timeline / scroll pin / scrub / 多元素编排须走 GSAP 插件技能（见父技能）。禁止在此自行默认 Framer Motion 或 GSAP。
+- **Charts**: 业务数据图表由 `frontend-design`「图表路由」决定；本技能不默认图表库。简单装饰性图形可用 CSS/SVG；dashboard / 统计 / 趋势 / 占比须走图表路由（**优先 ECharts，非强制**）。
 - **Spatial Composition**: Unexpected layouts. Asymmetry. Overlap. Diagonal flow. Grid-breaking elements. Generous negative space OR controlled density.
 - **Backgrounds & Visual Details**: Create atmosphere and depth rather than defaulting to solid colors. Add contextual effects and textures that match the overall aesthetic. Apply creative forms like gradient meshes, noise textures, geometric patterns, layered transparencies, dramatic shadows, decorative borders, custom cursors, and grain overlays.
 

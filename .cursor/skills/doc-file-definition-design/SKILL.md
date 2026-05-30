@@ -53,6 +53,7 @@ disable-model-invocation: true
 | UI 实现方式 | 纯 HTML/CSS/JS \| antd \| … |
 | 动效强度 | 静态 \| 轻量 \| 滚动叙事（无动效填「静态」） |
 | 动画库 | 无 \| CSS only \| GSAP \| … |
+| 图表库 | 无 \| CSS only \| ECharts（优先） \| @ant-design/charts \| … |
 | 确认时间 | YYYY-MM-DD HH:MM |
 
 ## 4. 架构设计
@@ -104,6 +105,8 @@ disable-model-invocation: true
 - 涉及 scroll 叙事、pin、页面级 stagger 时，动效强度不应为「静态」
 - 动画库选 GSAP 时，实现须走 `frontend-design` 动效路由
 - **动效强度 / 动画库**为**选填**：纯后台 CRUD 可留空；留空时由动效路由默认策略推断
+- **图表库**为**选填**：无业务数据可视化填「无」；有 dashboard/统计/趋势/占比等填具体库。**ECharts 为优先默认，非强制**——lockfile 或用户已选 @ant-design/charts 等须如实记录
+- 图表库选 ECharts 时，实现须走 `frontend-design` 图表路由并 Read `charts/echarts` 子技能
 
 ### 架构设计
 

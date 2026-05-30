@@ -118,6 +118,7 @@ graph LR
 | UI 实现方式 | 纯 HTML/CSS/JS \| antd \| … |
 | 动效强度 | 静态 \| 轻量 \| 滚动叙事 |
 | 动画库 | 无 \| CSS only \| GSAP \| … |
+| 图表库 | 无 \| CSS only \| ECharts（优先） \| @ant-design/charts \| … |
 | 锁定时间 | YYYY-MM-DD |
 ```
 
@@ -143,7 +144,7 @@ graph LR
 - 记录**项目级** UI 决策（非单页布局细节）
 - 字段与 `doc-file-definition-design`「前端设计」表一致，合入时以分支 `design.md` 为准覆盖 §8
 - 1-N 不变 UI 规范时，分支 `design.md`「前端设计」应自 §8 **整表继承**（见 `brainstorming-visual-enhancement`）
-- 界面风格 / 色系 / 动效强度 / 动画库：有 UI 决策时填写；字段与 `doc-file-definition-design`「前端设计」一致
+- 界面风格 / 色系 / 动效强度 / 动画库 / **图表库**：有 UI 决策时填写；字段与 `doc-file-definition-design`「前端设计」一致；**ECharts 为项目级优先默认，非绝对强制**
 
 ### 模块地图
 
