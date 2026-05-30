@@ -29,7 +29,7 @@ my_harness/
     │   └── lesson-capture.mdc          经验捕获与技能提炼
     ├── skills/                         21 个技能目录
     │   ├── doc-file-definition-requirement/
-    │   ├── doc-file-definition-design/   # design.md 含「前端设计」节（UI 必填）
+    │   ├── doc-file-definition-design/   # design.md 含「前端设计」（美学/界面风格/色系/动效）
     │   ├── doc-file-definition-plan/
     │   ├── doc-file-definition-devlog/
     │   ├── doc-file-definition-accept-log/
@@ -52,7 +52,7 @@ my_harness/
     │   │   ├── workflow-iteration.md    1-N 迭代工作流（含 14 项调整判断）
     │   │   └── reference.md             架构要素参考 + 设计文档模板 + 检查清单
     │   ├── tech-stack-guidance/         组织技术栈与系统开发模式（工具级/平台级）；含 go-lifecycle/（Go 参考库 + scripts/ 运维脚本）
-    │   ├── frontend-design/             前端 style+frame 路由（单技能）
+    │   ├── frontend-design/             前端 style+frame+动效 路由（单技能）
     │   │   ├── SKILL.md                 模式路由、参考索引、子技能表
     │   │   ├── free-style/              开放式美学子技能（无 ui-frame 库时）
     │   │   ├── ui-style/                参考数据（<slug>/DESIGN.md）
@@ -210,6 +210,18 @@ my_harness/
   │                    │            │
   └─ 可视化确认                      └─ /debug（如有问题）
 ```
+
+---
+
+## 推荐外部插件
+
+以下能力由 **Cursor 用户级插件** 提供，Harness 仅通过技能名路由引用，不在 `.cursor/skills/` 内维护副本：
+
+| 插件 | 用途 | 安装 |
+|------|------|------|
+| [gsap-skills](https://github.com/greensock/gsap-skills) | GSAP 动画（timeline、ScrollTrigger、React 等） | `npx skills add https://github.com/greensock/gsap-skills` 或 Cursor Settings → Remote Rule: `greensock/gsap-skills` |
+
+未安装时，涉及 GSAP 的实现任务 Agent 会提示安装。
 
 ---
 

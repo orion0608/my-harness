@@ -7,7 +7,7 @@ description: >
 
 # Frontend Design
 
-前端 **style + frame** 的唯一路由技能。`design.md`「前端设计」或用户明示为输入；何时 AskQuestion 由调用方（如 `brainstorming-visual-enhancement`）决定。
+前端 **style + frame + 动效** 的唯一路由技能。`design.md`「前端设计」或用户明示为输入；何时 AskQuestion 由调用方（如 `brainstorming-visual-enhancement`）决定。
 
 HTML 预览 → **`preview-html`**。
 
@@ -34,9 +34,50 @@ HTML 预览 → **`preview-html`**。
 → 约束式 / 项目已有库 → 核验栈兼容（见下「ui-frame 与技术栈兼容性」）→ 加载 ui-frame 子技能（如 antd）
 → 开放式且无库 → **Read** free-style 子技能
 → 否则 → 纯 HTML/CSS/JS
+→ 动效路由 → GSAP 插件技能（若命中，见下节）
 ```
 
 **实现栈兜底**（无 design.md）：用户指定 > lockfile > 源码 import > 纯 HTML。
+
+## 动效路由
+
+动效 **API 与最佳实践** 由 **GSAP 插件**（Cursor 外部插件）提供。本技能只定义 **何时 Read** 对应插件技能；禁止在 Harness 内重复 GSAP API 正文。
+
+**前置**：须已安装 GSAP 插件（见 README「推荐外部插件」）。未安装则提示安装，不得在 Harness 内替代。
+
+### 输入（按优先级）
+
+1. `design.md`「前端设计」→ **动效强度** / **动画库**
+2. 用户明示（如「用 GSAP ScrollTrigger」）
+3. 实现需求推断（见下「默认策略」）
+
+### 判定
+
+| 条件 | 行为 |
+|------|------|
+| 动画库 = `无` 或 `CSS only`，或动效强度 = `静态` | 不读 GSAP 插件；CSS transition / `@keyframes` / `animation-timeline` |
+| 动画库 = `GSAP`，或需 timeline 编排 | Read GSAP 插件（按场景选 core / timeline 等子技能） |
+| 滚动联动 / pin / scrub / parallax | 同上，含 scrolltrigger；复杂场景含 performance |
+| 需 Flip / Draggable 等插件能力 | 含 plugins 子技能 |
+| React / Next 实现 | 含 react 子技能 |
+| Vue / Svelte 等 | 含 frameworks 子技能 |
+
+### 默认策略（design.md 未记录时）
+
+- **ui-frame / antd 后台**：默认 `CSS only`；除非用户明确要求 GSAP。
+- **纯 HTML Demo / 开放式 landing**：计划含 scroll 叙事、pin、stagger 入场 → 默认 **GSAP**。
+- **简单 hover / opacity**：CSS 即可；不为微交互单独上 GSAP。
+- 用户已选定其他动画库 → 尊重选型，不强行 GSAP。
+
+### 次序
+
+style/frame 路由完成 → **动效路由**（写动画代码前）→ 按需 Read GSAP 插件技能。
+
+### 禁止
+
+- 禁止 `window.addEventListener('scroll', …)` 做动画
+- 禁止未 Read GSAP 插件技能就写 ScrollTrigger / timeline 代码
+- 禁止在 Harness 技能内复制 GSAP API 正文
 
 ### 参考式读取
 

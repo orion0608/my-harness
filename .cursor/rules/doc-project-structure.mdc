@@ -236,7 +236,7 @@ docs/*/
 | 发现 Bug 或技术债 | `docs/<branch>/issues.md` 追加一条 |
 | 分支合并/发布 | `docs/<branch>/release-notes.md` → 提取摘要到 `CHANGELOG.md`；合入时归档至主检出 `docs/<branch>/` |
 | 新增模块或架构变更 | `docs/ARCHITECTURE.md` + `README.md` |
-| 首次确立或变更项目级 UI 风格（美学模式、参考 slug、UI 实现方式） | `docs/ARCHITECTURE.md` §8（过程记录在 `docs/<branch>/design.md`「前端设计」） |
+| 首次确立或变更项目级 UI 风格（美学模式、界面风格、色系、参考 slug、UI 实现方式） | `docs/ARCHITECTURE.md` §8（过程记录在 `docs/<branch>/design.md`「前端设计」） |
 | 新增/修改 API | `docs/API.md` |
 | 数据库 Schema 变更 | `docs/DATABASE.md` |
 | 版本号变更 | `version.md` |
