@@ -75,8 +75,9 @@ Superpowers brainstorming 原生流程：
 
 | 须做 | 说明 |
 |------|------|
-| **Read `visual-companion-windows`** | 启动、写屏、`cursor-ide-browser` 打开 `url`、失败降级：**以该技能为唯一操作信源**，本规则不重复 |
+| **Read `visual-companion-windows`** | 启动、写屏、获得 Companion `url`、失败降级：**以该技能为唯一操作信源**，本规则不重复 |
 | **Read `preview-html`** | 仅不走 Companion 的本地 HTML（技能内降级 `direction-*.html`、§三 高保真 Demo 等） |
+| **Read `cursor-ide-browser-usage`** | 获得 **http(s)://** URL 后打开并浏览器验收；**以该技能为 MCP 工具序唯一信源**，本规则不重复 navigate / lock / snapshot 逐步表 |
 
 **禁止**：未 Read `visual-companion-windows` 即启动 Companion 
 
@@ -99,7 +100,12 @@ Superpowers brainstorming 原生流程：
 
 ### 阶段一：方向预览
 
-1. 按 **§二**（Companion 或技能内 HTML 降级）+ 浏览器验收
+**方向预览 Demo 技术栈**（制作预览页时）：
+
+- **默认**：不引入外部依赖；用 HTML、CSS、原生 JS 呈现基础布局与关键交互即可
+- **可选**：若基于现有项目前端代码微调能更清晰传达方向，Agent 可自行选用；非必须
+
+1. 按 **§二**（Companion 或 `preview-html` 获得 URL）→ **Read `cursor-ide-browser-usage`** 完成浏览器验收
 2. 约束维度（可与预览迭代）：布局、组件结构、关键交互、响应式、色调风格 → **UI 方向简报**（可附结构图，**不能**替代浏览器预览）
 3. 用户**明确确认** → 才可阶段二
 
